@@ -8,4 +8,10 @@ editor_options:
   chunk_output_type: console
 ---
 
-Welcome to my research website.
+# QTL analysis for Crichton
+
+### QTL_analysis_for_Crichton
+* [QTL_analysis_for_Crichton.Rmd](QTL_analysis_for_Crichton.html)
+
+### QTL_analysis_for_Crichton_final
+* [QTL_analysis_for_Crichton_final.Rmd](QTL_analysis_for_Crichton_final.html)

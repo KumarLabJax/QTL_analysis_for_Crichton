@@ -1,0 +1,804 @@
+---
+title: "QTL analysis for Crichton"
+author: "Hao He"
+output:
+  workflowr::wflow_html:
+    toc: true
+    toc_float: true
+editor_options: 
+  markdown: 
+    wrap: 72
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+### Library
+```{r library, message=FALSE, warning=FALSE}
+library(ggplot2)
+library(gridExtra)
+library(qtl)
+library(qtlcharts)
+library(tidyverse)
+library(lme4)
+library(lmerTest)
+library(qtl2)
+library(cowplot)
+```
+
+Quote from
+"<https://jacksonlaboratory.atlassian.net/wiki/spaces/KL/pages/29794140/WT144+QTL+results>"\
+"The GBS mapping can be found under:
+/projects/kumar-lab/peera/WT144_GBS_analysis/scripts Overall 225 markers
+passed genotyping QC, all samples matched the sex. The R code used here
+can be found here:
+<https://bitbucket.jax.org/users/peera/repos/wt144_scripts/browse> I
+took the input file and ran lm with the formula: TotalDist \~ gender +
+animal_name \* TestAge and extracted the coefficients for the animal
+alone and the interaction with age. For some reason the distribution of
+the animal coefficients alone is bi-modal."\
+
+The data was prepared using a nextflow pipeline which is deposited in
+another repo. The data is ready as a R/qtl input file, it's being read
+and scanone/scantwo are run on the data.\
+
+### Load qtl data and plot summary
+```{r Load qtl data and plot summary,warning=FALSE, fig.height=8, fig.width=10}
+WT144 <- read.cross(format = "csv", file = "data/WT144_GBS_Rqtl_input.csv", genotypes = c("A", "H", "B"))
+chror <- as.character(1:19)
+WT144$geno <- WT144$geno[chror]
+summary(WT144)
+plotMissing(WT144, main="")
+
+#drop.nullmarkers
+WT144 <- drop.nullmarkers(WT144)
+plotMissing(WT144, main="")
+```
+
+### Genotype_distribution_pre
+```{r Genotype_distribution_pre, fig.height=8, fig.width=12}
+# Plot the distribution of homo/hetero for each marker
+af <- NULL
+for (chr in names(WT144$geno)){
+  af <- rbind(af, data.frame(chr=chr,
+                             A=colSums(WT144$geno[[chr]]$data == 1, na.rm = T),
+                             H=colSums(WT144$geno[[chr]]$data == 2, na.rm = T),
+                             B=colSums(WT144$geno[[chr]]$data == 3, na.rm = T),
+                             N=colSums(is.na(WT144$geno[[chr]]$data))))
+}
+af$chr <- factor(af$chr, levels = names(WT144$geno))
+af$ID <- 1:nrow(af)
+#plot
+genotype_distribution_pre <- ggplot(af) + 
+  geom_point(aes(ID, A), color = "red") + 
+  geom_point(aes(ID, B), color="purple") + 
+  geom_point(aes(ID, H), color="green") + 
+  geom_point(aes(ID, N), color="black") + 
+  facet_grid(~chr, scales = "free") +
+  ylab("Frequency") + 
+  theme(text = element_text(size = 14),
+        axis.text.x = element_blank(),
+        axis.ticks = element_blank())
+#
+print(genotype_distribution_pre)
+```
+
+### Genotype_distribution_post
+```{r Genotype_distribution_post, fig.height=8, fig.width=12}
+# Choose who to drop. I chose A > H/4, B > H/4, H > (A+B)/2
+dropm <- rownames(af)[af$A < af$H/4 | af$B < af$H/4 | af$H < (af$A+af$B)/2 | af$N > (af$A+af$B+af$H)] 
+WT144 <- drop.markers(WT144, dropm)
+# Plot again
+af <- NULL
+for (chr in names(WT144$geno)){
+  af <- rbind(af, data.frame(chr=chr,
+                             A=colSums(WT144$geno[[chr]]$data == 1, na.rm = T),
+                             H=colSums(WT144$geno[[chr]]$data == 2, na.rm = T),
+                             B=colSums(WT144$geno[[chr]]$data == 3, na.rm = T),
+                             N=colSums(is.na(WT144$geno[[chr]]$data))))
+}
+af$chr <- factor(af$chr, levels = names(WT144$geno))
+af$ID <- 1:nrow(af)
+#plot
+genotype_distribution_post <- ggplot(af) + 
+  geom_point(aes(ID, A), color = "red") + 
+  geom_point(aes(ID, B), color="purple") + 
+  geom_point(aes(ID, H), color="green") + 
+  geom_point(aes(ID, N), color="black") + 
+  facet_grid(~chr, scales = "free") +
+  ylab("Frequency") + 
+  theme(text = element_text(size = 14),
+        axis.text.x = element_blank(),
+        axis.ticks = element_blank())
+
+print(genotype_distribution_post)
+
+plotMap(WT144)
+```
+
+### Process phenotype on the genotyped animals
+```{r Process phenotype on the genotyped animals, message=FALSE, warning=FALSE}
+#read data Report-12-27-2019.csv, It contains 2096 animals. The linear model performed by Asaf is based on 2096 animals. However, in the cross object WT144, 309 animals were genotyped. Asaf just extracted the coefficients for these 309 animals.
+report <- readr::read_csv("data/Report-12-27-2019.csv") %>% 
+  dplyr::select(animal_name, gender, TotalDist, TestAge, test.no) %>%
+  dplyr::mutate(across(c(gender, test.no), as.factor))
+#plot TotalDist vs test age among 2096 animals
+p1 <- ggplot(data = report,  
+             mapping = aes(x = TestAge, y = TotalDist, color = test.no)) +
+  geom_point(aes(shape=gender)) +
+  geom_smooth(method=lm)
+print(p1)
+#plot TotalDist distribution across test.no among 2096 animals
+p2 <- ggplot(data = report,  
+             mapping = aes(x = test.no, y = TotalDist, color = test.no)) +
+  geom_boxplot()
+print(p2)
+#plot histgram for TotalDist among 2096 animals
+p3 <- ggplot(data = report,  
+             mapping = aes(x = TotalDist, fill = test.no)) +
+  geom_histogram() +
+  facet_grid(test.no ~ .)
+print(p3)
+#plot histgram for TotalDist for genders with mean lines among 2096 animals
+p4 <- ggplot(data = report,  
+             mapping = aes(x = TotalDist, fill = gender)) +
+  geom_histogram()
+print(p4)
+
+#model by Asaf using 2096 animals
+anml <- lm(TotalDist ~ gender + animal_name * TestAge, data=report)
+#coefs
+coefs <- tibble(names = names(anml$coefficients), allvals = anml$coefficients) %>% 
+  filter(grepl("animal_name", names)) %>%
+  # Add a column to indicate if it's the name or the interactions
+  separate(names, c("animal_name", "interaction") ,sep=":")
+coefs$interaction <- replace_na(coefs$interaction, "base")
+coefs$animal_name <- gsub("animal_name", "", coefs$animal_name)
+coefs <- pivot_wider(coefs, id_cols = animal_name, names_from = interaction, values_from = allvals)
+rep_wide <- pivot_wider(report, names_from = test.no, values_from = c("TestAge", "TotalDist"))
+table_all <- left_join(coefs, rep_wide, by="animal_name") %>% rename(AnimalName=animal_name, Gender=gender)
+
+#histgram for base model by Asaf using 2096 animals
+p5 <- ggplot(data = table_all,  
+             mapping = aes(x = base, fill = Gender)) +
+  geom_histogram() +
+  ggtitle("Histgram for base modeled from 2096 animals")
+print(p5)
+
+#read data Report-12-27-2019.csv and filter to the 309 animals which also have genotypes. 
+report <- readr::read_csv("data/Report-12-27-2019.csv") %>% 
+  dplyr::select(animal_name, gender, TotalDist, TestAge, test.no) %>%
+  dplyr::filter(animal_name %in% WT144$pheno$AnimalName) %>% #filter to the animals with genotypes
+  dplyr::mutate(across(c(gender, test.no), as.factor))
+#plot TotalDist vs test age among 309 animals
+p6 <- ggplot(data = report,  
+             mapping = aes(x = TestAge, y = TotalDist, color = test.no)) +
+  geom_point(aes(shape=gender)) +
+  geom_smooth(method=lm)
+print(p6)
+#plot TotalDist distribution across test.no among 309 animals
+p7 <- ggplot(data = report,  
+             mapping = aes(x = test.no, y = TotalDist, color = test.no)) +
+  geom_boxplot()
+print(p7)
+#plot histgram for TotalDist among 309 animals
+p8 <- ggplot(data = report,  
+             mapping = aes(x = TotalDist, fill = test.no)) +
+  geom_histogram() +
+  facet_grid(test.no ~ .)
+print(p8)
+#plot histgram for TotalDist for genders with mean lines among 309 animals
+p9 <- ggplot(data = report,  
+             mapping = aes(x = TotalDist, fill = gender)) +
+  geom_histogram()
+print(p9)
+
+#From Asaf:
+# I took the input file and ran lm with the formula: TotalDist ~ gender + animal_name * TestAge and extracted the coefficients for the animal alone and the interaction with age. For some reason the distribution of the animal coefficients alone is bi-modal."
+
+# It is because the model by Asaf is based on 2096 animals, but the coefficients Asaf extracted is only for the animals with genotypes. 309 animals out of 2096 have genotypes. It resulted in a sampling bias. We should focus on the animals having both phenotype and genotype.
+
+#model
+anml <- lm(TotalDist ~ gender + animal_name * TestAge, data=report) # animal_name as a fixed effect
+#coefs
+coefs <- tibble(names = names(anml$coefficients), allvals = anml$coefficients) %>% 
+  filter(grepl("animal_name", names)) %>%
+  # Add a column to indicate if it's the name or the interactions
+  separate(names, c("animal_name", "interaction") ,sep=":")
+coefs$interaction <- replace_na(coefs$interaction, "base")# make coefficient of animal_name as base
+coefs$animal_name <- gsub("animal_name", "", coefs$animal_name)
+coefs <- pivot_wider(coefs, id_cols = animal_name, names_from = interaction, values_from = allvals)
+rep_wide <- pivot_wider(report, names_from = test.no, values_from = c("TestAge", "TotalDist"))
+table_all <- left_join(coefs, rep_wide, by="animal_name") %>% rename(AnimalName=animal_name, Gender=gender)
+
+#add table_all to the phenotype df in WT144
+WT144$pheno <- left_join(WT144$pheno, table_all[, 1:3], by = "AnimalName")
+#phenotype distribution
+#plot histgram for base.x, which is calculated from the 2096 animals of report data/Report-12-27-2019.csv by Asaf
+plotPheno(WT144, pheno.col=3, xlab = "base.x", main = "")
+#plot base.x  by gender
+p10 <- ggplot(data = WT144$pheno,  
+             mapping = aes(x = base.x, fill = Gender)) +
+  geom_histogram()
+print(p10)
+#plot base.x  vs TestAge.x
+p11 <- ggplot(data = WT144$pheno,  
+             mapping = aes(x = TestAge.x, y = base.x, color = Gender)) +
+  geom_point()+
+  geom_smooth(method=lm)
+print(p11)
+#plot histgram for TestAge.x, which is calculated from the 2096 animals of report data/Report-12-27-2019.csv
+plotPheno(WT144, pheno.col=4, xlab = "TestAge.x", main = "")
+plotPheno(WT144, pheno.col=9, xlab = "TotalDist_1", main = "")
+plotPheno(WT144, pheno.col=10, xlab = "TotalDist_2", main = "")
+plotPheno(WT144, pheno.col=11, xlab = "TotalDist_3", main = "")
+
+#plot histgram for base.y, which is calculated from the animals having both genotypes and phenotypes
+plotPheno(WT144, pheno.col=12, xlab = "base.y", main = "")
+#plot base.y  by gender
+p12 <- ggplot(data = WT144$pheno,  
+             mapping = aes(x = base.y, fill = Gender)) +
+  geom_histogram()
+print(p12)
+#plot base.y vs TestAge.y
+p13 <- ggplot(data = WT144$pheno,  
+             mapping = aes(x = TestAge.y, y = base.y, color = Gender)) +
+  geom_point()+
+  geom_smooth(method=lm)
+print(p13)
+#plot histgram for TestAge.y, which is calculated from the animals having both genotypes and phenotypes
+plotPheno(WT144, pheno.col=13, xlab = "TestAge.y", main = "")
+
+#a random intercept for each animal, 
+#and a random slope of TestAge for each animal 
+#This allows both the intercept and the slope of TestAge to vary across animals
+res <- lmer(TotalDist ~ TestAge + (1 + TestAge|animal_name),
+              data = report)
+summary(res)
+confint(res, level = 0.95, method = "Wald")
+#there is strong evidence that TestAge significantly decreased TotalDist.
+
+res.std <- resid(res)/sd(resid(res))
+plot(res.std, ylab="Standardized Residuals")
+
+ggplot(as.data.frame(res.std), aes(sample = res.std)) +
+  geom_qq() +
+  geom_qq_line()
+
+#to get the fitted Intercept and Slope
+TotalDist_animal <- coef(res)$animal_name
+colnames(TotalDist_animal) <- c("Intercept", "Slope")
+TotalDist_animal$AnimalName<-rownames(TotalDist_animal)
+
+#add TotalDist_animal to the phenotype df in WT144
+WT144$pheno <- left_join(WT144$pheno, TotalDist_animal, by = "AnimalName")
+plotPheno(WT144, pheno.col=14, xlab = "")
+plotPheno(WT144, pheno.col=15, xlab = "")
+```
+
+### Run qtl
+```{r Run qtl, eval=T}
+#run qtl
+print(summary(WT144))
+WT144 <- drop.nullmarkers(WT144)
+covars <- model.matrix(~ Gender, WT144$pheno)[,-1]
+#idx 
+idx <- c(3,4,9:15)
+out.mr <- operm <- st <- list()
+#loop for each pheno
+for (i in 1:length(idx)){
+  out.mr[[i]] <- scanone(WT144, pheno.col=idx[[i]], method="mr", addcovar=covars)
+  out.mr[[i]]$lod[is.infinite(out.mr[[i]]$lod)]=0
+  print(summary(out.mr[[i]]))
+  #operm
+  operm[[i]] <-scanone(WT144, pheno.col=idx[[i]], n.perm=1000, method="mr", addcovar=covars)
+  print(summary(operm[[i]]))
+  #scantwo
+  st[[i]] <- scantwo(WT144, pheno.col = idx[[i]], method="mr")
+}
+save(out.mr, operm, st, file = "output/qtl.out.obj.mixedmodel.RData")
+```
+
+### Plot on run qtl
+```{r Plot on run qtl, warning=FALSE, fig.height=8, fig.width=10}
+name = "WT144_plot"
+#print
+print(summary(WT144))
+WT144 <- drop.nullmarkers(WT144)
+covars <- model.matrix(~ Gender, WT144$pheno)[,-1]
+#idx 
+idx <- c(3,4,9:15)
+#map
+map <- purrr::map(WT144$geno, ~(.x$map))
+attr(map, "is_x_chr") <- structure(c(rep(FALSE,18)), names=c(1:5, 7:19))
+
+load("output/qtl.out.obj.mixedmodel.RData")
+#loop for each pheno
+for (i in 1:length(idx)){
+  print(colnames(WT144$pheno)[idx[[i]]])
+  #operm_hist
+  #pdf(paste0("output/", name,"-", colnames(WT144$pheno)[idx[[i]]], ".pdf"), width = 10, height = 10)
+  plot(operm[[i]][!is.infinite(operm[[i]])], main=paste(name, colnames(WT144$pheno)[idx[[i]]], sep="-"))
+  #mrscan_pheno
+  plot(out.mr[[i]], ylab=colnames(WT144$pheno)[idx[[i]]])
+  add.threshold(out.mr[[i]], perms = operm[[i]], alpha = 0.05, col="magenta")
+  #pxg
+  peak = summary(out.mr[[i]], threshold=summary(operm[[i]], alpha = 0.05)[[1]])
+  print(peak)
+  marker = c("chr5-136332619-.-C-A", "chr14-69691477-.-G-T")
+  for (mar in marker){
+    par(mar=c(3, 5, 4, 3))
+    plotPXG(WT144, marker=mar, jitter = 0.25, pheno.col = idx[[i]], infer=F, main=paste(mar),
+            mgp=c(3.4,1,0))
+  }
+  #interaction_effect
+  effectplot(WT144, 
+             mname1 = marker[[1]], 
+             mname2 = marker[[2]], 
+             pheno.col = idx[[i]], add.legend=T, legend.lab = "")
+  
+    ##Multiple-QTL analyses 
+  # After performing the single- and two-QTL genome scans, it’s best to bring the identified loci together into a joint model, which we then refine and from which we may explore the possibility of further QTL. In this effort, we work with “QTL objects” created by makeqtl(). We fit multiple-QTL models with fitqtl(). A number of additional functions will be introduced below.
+  #First, we create a QTL object containing the loci on chr 5 and 14. 
+  #chr5-136332619-.-C-A  75.97770
+  #chr14-69691477-.-G-T  36.07219
+  WT144 <- sim.geno(WT144, n.draws=64)
+  qtl <- makeqtl(WT144, chr=c(5,14), pos=c(75.97770, 36.07219), what="draws")
+  out.fq <- fitqtl(WT144, pheno.col=idx[[i]], qtl=qtl) 
+  print(summary(out.fq))
+  #We may obtain the estimated effects of the QTL via get.ests=TRUE. We use dropone=FALSE to suppress the drop-one-term analysis.
+  print(summary(fitqtl(WT144, pheno.col=idx[[i]], qtl=qtl, get.ests=TRUE, dropone=FALSE)))
+  #To assess the possibility of an interaction between the two QTL, we may fit the model with the interaction, indicated via a model “formula”.
+  print("To assess the possibility of an interaction between the two QTL")
+  out.fqi <- fitqtl(WT144, pheno.col=idx[[i]], qtl=qtl, formula=y~Q1+Q2+Q1:Q2) 
+  print(summary(out.fqi))
+  
+  #complete_scan2
+  plot(st[[i]])
+  #toptwo_scan2
+  plot(st[[i]], chr = summary(out.mr[[i]])[order(-summary(out.mr[[i]])$lod), "chr"][1:2])
+  #dev.off()
+}
+
+#plot all phenotypes
+plot(out.mr[[6]], col= "blue", ylim = c(0, 30), ylab = "LOD score")
+plot(out.mr[[7]], col= "red",   add=TRUE)
+plot(out.mr[[3]], col= "green", add=TRUE)
+plot(out.mr[[4]], col= "black",  add=TRUE)
+plot(out.mr[[5]], col=  "purple", add=TRUE)
+abline(h=3.2, col="red", lty=2, lwd=3)
+# Add a legend
+legend("topright", 
+       legend=c("Base", "TestAge", "TotalDist_1", "TotalDist_2", "TotalDist_3"),
+       col=c("blue", "red", "green", "black", "purple"), lty=1, cex=0.8)
+
+#only at chr 5 and 14
+#plot all phenotypes
+plot(out.mr[[6]], col= "blue", ylim = c(0, 30), ylab = "LOD score", chr = c(5, 14))
+plot(out.mr[[7]], col= "red",   add=TRUE, chr = c(5, 14))
+plot(out.mr[[3]], col= "green", add=TRUE, chr = c(5, 14))
+plot(out.mr[[4]], col= "black",  add=TRUE, chr = c(5, 14))
+plot(out.mr[[5]], col=  "purple", add=TRUE, chr = c(5, 14))
+abline(h=3.2, col="red", lty=2, lwd=3)
+# Add a legend
+legend("topright", 
+       legend=c("Base", "TestAge", "TotalDist_1", "TotalDist_2", "TotalDist_3"),
+       col=c("blue", "red", "green", "black", "purple"), lty=1, cex=0.8)
+
+#plot phenotypes: slope and totaldistance3
+plot(out.mr[[9]], col= "blue", ylim = c(0, 30), ylab = "LOD score")
+plot(out.mr[[5]], col=  "green", add=TRUE)
+abline(h=3.2, col="red", lty=2, lwd=3)
+# Add a legend
+legend("topright", 
+       legend=c("Slope", "TotalDist"),
+       col=c("blue", "green"), lty=1, cex=0.8)
+
+#only at chr 5 and 14
+#plot phenotypes: slope and totaldistance3
+plot(out.mr[[9]], col= "blue", ylim = c(0, 30), ylab = "LOD score", chr = c(5, 14))
+plot(out.mr[[5]], col=  "green", add=TRUE, chr = c(5, 14))
+abline(h=3.2, col="red", lty=2, lwd=3)
+# Add a legend
+legend("topright", 
+       legend=c("Slope", "TotalDist"),
+       col=c("blue", "green"), lty=1, cex=0.8)
+
+#Interval estimates of the location of QTL are commonly obtained via 1.5-LOD support intervals,
+lodint.chr5.slope = lodint(out.mr[[9]], chr= 5)
+lodint.chr5.slope
+lodint.chr14.slope = lodint(out.mr[[9]], chr= 14)
+lodint.chr14.slope
+
+lodint.chr5.TotalDist3 = lodint(out.mr[[5]], chr= 5)
+lodint.chr5.TotalDist3
+lodint.chr14.TotalDist3 = lodint(out.mr[[5]], chr= 14)
+lodint.chr14.TotalDist3
+
+#genes in the qtl region
+# query_variants <- create_variant_query_func("/projects/compsci/vmp/USERS/heh/DO_Opioid/data/cc_variants.sqlite")
+# query_genes <- create_gene_query_func("/projects/compsci/vmp/USERS/heh/DO_Opioid/data/mouse_genes_mgi.sqlite")
+# 
+# #the interval for chr5 is 72.40547 to 77.76853 cM, in bp is 133052642 to 138956439
+# #Ssc4d at chr5 135.9602 - 135.9745; MGI:MGI:1924709
+# chr5_gene <- query_genes(chr = 5, 133.052642, 138.956439)
+# plot_genes(chr5_gene)
+# #zoom in 
+# plot_genes(query_genes(5, 135.85, 136.1))
+# 
+# #the interval for chr14 is 26.14972 to 36.07219 cM, in bp is 50642778 to 69691477
+# #Kpna3 at chr14 61.36519 - 61.43995; MGI:MGI:1100863
+# chr14_gene <- query_genes(chr = 14, 50.642778, 69.691477)
+# #zoom in 
+# plot_genes(query_genes(14, 61.30, 61.50))
+
+#loop for each pheno
+for (i in 1:length(idx)){  
+  print(colnames(WT144$pheno)[idx[[i]]])
+  #save plots
+  #operm_hist
+  pdf(paste0("output/", name,"-", colnames(WT144$pheno)[idx[[i]]], ".pdf"), width = 10, height = 10)
+  plot(operm[[i]][!is.infinite(operm[[i]])], main=paste(name, colnames(WT144$pheno)[idx[[i]]], sep="-"))
+  #mrscan_pheno
+  plot(out.mr[[i]], ylab=colnames(WT144$pheno)[idx[[i]]])
+  add.threshold(out.mr[[i]], perms = operm[[i]], alpha = 0.05, col="magenta")
+  #pxg
+  peak = summary(out.mr[[i]], threshold=summary(operm[[i]], alpha = 0.05)[[1]])
+  print(peak)
+  marker = c("chr5-136332619-.-C-A", "chr14-69691477-.-G-T")
+  for (mar in marker){
+    par(mar=c(3, 5, 4, 3))
+    plotPXG(WT144, marker=mar, jitter = 0.25, pheno.col = idx[[i]], infer=F, main=paste(mar),
+            mgp=c(3.4,1,0))
+  }
+  #interaction_effect
+  effectplot(WT144, 
+             mname1 = rownames(peak)[1], 
+             mname2 = rownames(peak)[2], 
+             pheno.col = idx[[i]], add.legend=T, legend.lab = "")
+  
+     ##Multiple-QTL analyses 
+  # After performing the single- and two-QTL genome scans, it’s best to bring the identified loci together into a joint model, which we then refine and from which we may explore the possibility of further QTL. In this effort, we work with “QTL objects” created by makeqtl(). We fit multiple-QTL models with fitqtl(). A number of additional functions will be introduced below.
+  #First, we create a QTL object containing the loci on chr 5 and 14. 
+  #chr5-136332619-.-C-A  75.97770
+  #chr14-69691477-.-G-T  36.07219
+  WT144 <- sim.geno(WT144, n.draws=64)
+  qtl <- makeqtl(WT144, chr=c(5,14), pos=c(75.97770, 36.07219), what="draws")
+  out.fq <- fitqtl(WT144, pheno.col=idx[[i]], qtl=qtl, method = "hk") 
+  print(summary(out.fq))
+  #We may obtain the estimated effects of the QTL via get.ests=TRUE. We use dropone=FALSE to suppress the drop-one-term analysis.
+  print(summary(fitqtl(WT144, pheno.col=idx[[i]], qtl=qtl, method="hk", get.ests=TRUE, dropone=FALSE)))
+  #To assess the possibility of an interaction between the two QTL, we may fit the model with the interaction, indicated via a model “formula”.
+  print("To assess the possibility of an interaction between the two QTL")
+  out.fqi <- fitqtl(WT144, pheno.col=idx[[i]], qtl=qtl, method="hk", formula=y~Q1+Q2+Q1:Q2) 
+  print(summary(out.fqi))
+  
+  #complete_scan2
+  plot(st[[i]])
+  #toptwo_scan2
+  plot(st[[i]], chr = summary(out.mr[[i]])[order(-summary(out.mr[[i]])$lod), "chr"][1:2])
+  dev.off()
+}
+```
+
+### Plot the Dist_vs_age separate by genotype for each marker
+```{r Plot the Dist_vs_age separate by genotype for each marker, warning=FALSE, fig.height=8, fig.width=10}
+plot_graph <- function(cross, name){
+  # Plot the Dist vs age, separate by genotype for each marker
+  allphen <- cross$pheno
+  allgeno <- as.data.frame(pull.geno(cross))
+  rownames(allgeno) <- cross$pheno$AnimalName
+  allphen <- merge(allphen, allgeno, by.x="AnimalName", by.y="row.names", all.x=TRUE)
+  pdf(paste0("output/", name, "_TotalDist_vs_TestAge_by_marker.pdf"))
+  for (mar in colnames(allgeno)){
+    subplot <- allphen[!is.na(allphen[,mar, drop=FALSE]),] %>% 
+      pivot_longer(cols = starts_with("TestAge_"), names_to="test.no", values_to = "Age") %>%
+      separate(test.no, c("empty1", "test1")) %>%
+      pivot_longer(cols = starts_with("TotalDist_"), names_to="test.no.2", values_to = "Dist") %>%
+      separate(test.no.2, c("empty2", "test2")) %>% filter(test1==test2)
+    subplot <- as.data.frame(subplot)
+    subplot[, mar] <- factor(subplot[, mar, drop=T])
+    levels(subplot[,mar]) <- c("AA","AB","BB")
+    p <- ggplot(subplot, aes(Age, Dist, color=get(mar), group=get(mar))) + 
+      geom_point() + 
+      labs(color = "Genotype") +
+      scale_color_brewer(palette = "Set1") + 
+      stat_smooth(method="lm", show.legend = FALSE, formula = y~x) + 
+      labs(title=paste0("effect for marker ", mar))
+    print(p)
+  }
+  dev.off()
+}
+
+plot_int_graph <- function(cross, name,  basem){
+  # Plot the Dist vs age, separate by genotype for each marker
+  allphen <- cross$pheno
+  allgeno <- as.data.frame(pull.geno(cross))
+  rownames(allgeno) <- cross$pheno$AnimalName
+  allphen <- merge(allphen, allgeno, by.x="AnimalName", by.y="row.names", all.x=TRUE)
+  #pdf(paste0("output/", name, ".pdf"))
+  for (mar in colnames(allgeno)){
+    print(mar)
+    subplot <- allphen[!is.na(allphen[,mar, drop=FALSE]),] %>% 
+      pivot_longer(cols = starts_with("TestAge_"), names_to="test.no", values_to = "Age") %>% 
+      separate(test.no, c("empty1", "test1")) %>%
+      pivot_longer(cols = starts_with("TotalDist_"), names_to="test.no.2", values_to = "Dist") %>%
+      separate(test.no.2, c("empty2", "test2")) %>% filter(test1==test2)
+    subplot <- as.data.frame(subplot)
+    subplot$interactions <- factor(subplot[, basem] + subplot[, mar]*3)
+    # 1:1 -> 4 1:2 -> 7 1:3 -> 10
+    # 2:1 -> 5 2:2 -> 8 2:3 -> 11
+    # 3:1 -> 6 3:2 -> 9 3:3 -> 12
+    itypes  <- c(1,2,3,"AA:AA", "AB:AA", "BB:AA", 
+                "AA:AB", "AB:AB", "BB:AB",
+                "AA:BB", "AB:BB", "BB:BB")
+    levels(subplot$interactions) <- itypes[as.integer(levels(subplot$interactions))]
+    
+    #replaces 1 2 and 3 as AA, AB and BB
+    subplot[, basem][subplot[, basem] == 1] <- "AA"
+    subplot[, basem][subplot[, basem] == 2] <- "AB"
+    subplot[, basem][subplot[, basem] == 3] <- "BB"
+    subplot[, mar][subplot[, mar] == 1] <- "AA"
+    subplot[, mar][subplot[, mar] == 2] <- "AB"
+    subplot[, mar][subplot[, mar] == 3] <- "BB"
+    
+    p1 <- ggplot(subplot, aes(Age, Dist, color=interactions, group=interactions)) + 
+      geom_point(shape = 20) + 
+      #scale_color_discrete("Genotype") +
+      labs(color = "Genotype") +
+      ylab("TotalDist") +
+      xlab("TestAge") +
+      #scale_color_brewer(palette = "Set1") + 
+      scale_color_manual(breaks = c("AA:AA", "AB:AA", "BB:AA", "AA:AB",
+                                    "AB:AB", "BB:AB", "AA:BB", "AB:BB", "BB:BB"),
+                                         #values = RColorBrewer::brewer.pal(9, "Set1")[9:1]) +
+                       values = c("#999999", "#F781BF", "#A65628","#9a9a00", "#FF7F00", "#984EA3", "#4DAF4A", "#377EB8", "#E41A1C")) +
+      stat_smooth(method="lm", show.legend = FALSE, formula = y~x) + 
+      labs(title=paste0("effect for markers ", basem, " x ", mar)) +
+      theme_bw()
+    print(p1)
+    
+    p2 <- ggplot(subplot, aes(Age, Dist, color=interactions, group=interactions)) +
+      geom_point(shape = 20) +
+      geom_line(aes(group = AnimalName, color = interactions), show.legend = FALSE, alpha = 0.2) +  
+      geom_smooth(method='lm', formula= y~x, show.legend = FALSE) +
+      #scale_color_discrete("Genotype") +
+      labs(color = "Genotype") +
+      ylab("TotalDist") +
+      xlab("TestAge") +
+      #scale_color_brewer(palette = "Set1") + 
+      scale_color_manual(breaks = c("AA:AA", "AB:AA", "BB:AA", "AA:AB",
+                                    "AB:AB", "BB:AB", "AA:BB", "AB:BB", "BB:BB"),
+                                         #values = RColorBrewer::brewer.pal(9, "Set1")[9:1]) +
+                       values = c("#999999", "#F781BF", "#A65628","#9a9a00", "#FF7F00", "#984EA3", "#4DAF4A", "#377EB8", "#E41A1C")) +
+      stat_smooth(method="lm", show.legend = FALSE, formula = y~x) + 
+      labs(title=paste0("Effect for markers ", basem, " x ", mar)) +
+      facet_grid(subplot[, basem] ~ subplot[, mar]) +
+      theme_bw() +
+      theme(plot.title = element_text(size=6))
+    print(p2)
+  }
+  #dev.off()
+}
+plot_graph(WT144, "WT144_effect_for_marker_plots")
+plot_int_graph(WT144, paste0("WT144_effect_for_marker_", "_int_chr5-136332619-.-C-A"), "chr5-136332619-.-C-A")
+
+pdf(paste0("output/", paste0("WT144_effect_for_marker_", "_int_chr5-136332619-.-C-A"), ".pdf"))
+plot_int_graph(WT144, paste0("WT144_effect_for_marker_", "_int_chr5-136332619-.-C-A"), "chr5-136332619-.-C-A")
+dev.off()
+```
+
+### Figure panel for publication
+```{r Figure panel for publication, fig.width= 8.5, fig.height = 11}
+# define a function that emits the desired plot
+figA <- function() {
+  par(
+    mar = c(3, 5, 1, 1),
+    mgp = c(2, 1, 0)
+  )
+  #plot phenotypes: slope and totaldistance3
+  plot(out.mr[[9]], col= "blue", ylim = c(0, 30), ylab = "LOD score")
+  plot(out.mr[[5]], col=  "green", add=TRUE)
+  abline(h=3.2, col="red", lty=2, lwd=3)
+  # Add a legend
+  legend("topright", 
+         legend=c("Slope", "Total distance traveled"),
+         col=c("blue", "green"), lty=1, cex=0.8)
+}
+
+figB <- function() {
+  par(
+    mar = c(3, 5, 1, 0.5),
+    mgp = c(2, 1, 0)
+  )
+  #only at chr 5 and 14
+  #plot phenotypes: slope and totaldistance3
+  plot(out.mr[[9]], col= "blue", ylim = c(0, 30), ylab = "LOD score", chr = c(5), main = "QTL Interval Chr 5")
+  plot(out.mr[[5]], col=  "green", add=TRUE, chr = c(5))
+  abline(h=3.2, col="red", lty=2, lwd=3)
+  #abline(v= 76.0, col="black", lty=2, lwd=1)
+  text(75.5, 29, "5@76.0", cex = 0.75)
+  segments(x0 = 76,
+         x1 = 76,
+         y0 = 0,
+         y1 = 28,
+         col="black", lty=2, lwd=1)
+    segments(x0 = 72.40574,
+         x1 = 77.76853,
+         y0 = 2,
+         y1 = 2,
+         col="black", lty=1, lwd=2)
+    segments(x0 = 72.40574,
+         x1 = 72.40574,
+         y0 = 1.85,
+         y1 = 2.15,
+         col="black", lty=1, lwd=2)
+    segments(x0 = 77.76853,
+         x1 = 77.76853,
+         y0 = 1.85,
+         y1 = 2.15,
+         col="black", lty=1, lwd=2)
+    text(63, 1, "1.5-LOD interval", cex = 0.75)
+  # Add a legend
+  # legend("topright", 
+  #        legend=c("Slope", "Total Distance traveled"),
+  #        col=c("blue", "green"), lty=1, cex=0.8)
+}
+
+
+figC <- function() {
+  par(
+    mar = c(3, 5, 1, 0.5),
+    mgp = c(2, 1, 0)
+  )
+  #only at chr 5 and 14
+  #plot phenotypes: slope and totaldistance3
+plot(out.mr[[9]], col= "blue", ylim = c(0, 30), ylab = "LOD score", chr = c(14), main = "QTL Interval Chr 14")
+plot(out.mr[[5]], col=  "green", add=TRUE, chr = c(14))
+abline(h=3.2, col="red", lty=2, lwd=3)
+#abline(v= 76.0, col="black", lty=2, lwd=1)
+text(34, 7, "14@36.1", cex = 0.75)
+segments(x0 = 36.07219,
+         x1 = 36.07219,
+         y0 = 0,
+         y1 = 6.4,
+         col="black", lty=2, lwd=1)
+segments(x0 = 26.14,
+         x1 = 36.07219,
+         y0 = 2,
+         y1 = 2,
+         col="black", lty=1, lwd=2)
+segments(x0 = 26.14,
+         x1 = 26.14,
+         y0 = 1.85,
+         y1 = 2.15,
+         col="black", lty=1, lwd=2)
+segments(x0 = 36.07219,
+         x1 = 36.07219,
+         y0 = 1.85,
+         y1 = 2.15,
+         col="black", lty=1, lwd=2)
+text(29.5, 1, "1.5-LOD interval", cex = 0.75)
+  # Add a legend
+  # legend("topright", 
+  #        legend=c("Slope", "Total Distance traveled"),
+  #        col=c("blue", "green"), lty=1, cex=0.8)
+}
+
+
+figD <- function() {
+ par(mar = c(5, 5, 1, 0.5), 
+     mgp = c(3, 0.8, 0))
+  #interaction_effect for slope
+  effectplot(WT144, main = "",
+             mname1 = marker[[1]], 
+             mname2 = marker[[2]], ylab = "Total distance traveled", 
+             xlab = marker[[2]],
+             pheno.col = 11, add.legend=F)
+  # Add a legend
+  legend("topleft", legend=c("AA", "AB", "BB"), title = marker[[1]],
+       col=c("black","red", "blue"), pch = 1, lty=1, cex=0.8)
+}
+
+figE <- function() {
+  par(
+    mar = c(3, 5, 1, 1),
+    mgp = c(3, 1, 0)
+  )
+  #interaction_effect for slope
+  effectplot(WT144, main = "",
+             mname1 = marker[[1]], 
+             mname2 = marker[[2]], ylab = "Slope",xlab = marker[[2]],
+             pheno.col = 15, add.legend=F)
+}
+
+cross = WT144
+basem = "chr5-136332619-.-C-A"
+
+# Plot the Dist vs age, separate by genotype for each marker
+allphen <- cross$pheno
+allgeno <- as.data.frame(pull.geno(cross))
+rownames(allgeno) <- cross$pheno$AnimalName
+allphen <- merge(allphen, allgeno, by.x="AnimalName", by.y="row.names", all.x=TRUE)
+#pdf(paste0("output/", name, ".pdf"))
+#for (mar in colnames(allgeno)){
+mar = "chr14-69691477-.-G-T"
+  print(mar)
+  subplot <- allphen[!is.na(allphen[,mar, drop=FALSE]),] %>% 
+    pivot_longer(cols = starts_with("TestAge_"), names_to="test.no", values_to = "Age") %>% 
+    separate(test.no, c("empty1", "test1")) %>%
+    pivot_longer(cols = starts_with("TotalDist_"), names_to="test.no.2", values_to = "Dist") %>%
+    separate(test.no.2, c("empty2", "test2")) %>% filter(test1==test2)
+  subplot <- as.data.frame(subplot)
+  subplot$interactions <- factor(subplot[, basem] + subplot[, mar]*3)
+  # 1:1 -> 4 1:2 -> 7 1:3 -> 10
+  # 2:1 -> 5 2:2 -> 8 2:3 -> 11
+  # 3:1 -> 6 3:2 -> 9 3:3 -> 12
+  itypes  <- c(1,2,3,"AA:AA", "AB:AA", "BB:AA", 
+               "AA:AB", "AB:AB", "BB:AB",
+               "AA:BB", "AB:BB", "BB:BB")
+  levels(subplot$interactions) <- itypes[as.integer(levels(subplot$interactions))]
+  
+  #replaces 1 2 and 3 as AA, AB and BB
+  subplot[, basem][subplot[, basem] == 1] <- "AA"
+  subplot[, basem][subplot[, basem] == 2] <- "AB"
+  subplot[, basem][subplot[, basem] == 3] <- "BB"
+  subplot[, mar][subplot[, mar] == 1] <- "AA"
+  subplot[, mar][subplot[, mar] == 2] <- "AB"
+  subplot[, mar][subplot[, mar] == 3] <- "BB"
+  
+  p1 <- ggplot(subplot, aes(Age, Dist, color=interactions, group=interactions)) + 
+    geom_point(shape = 20, size=0.75) + 
+    #scale_color_discrete("Genotype") +
+    labs(color = "Genotype") +
+    ylab("TotalDist") +
+    xlab("Test Age") +
+    #scale_color_brewer(palette = "Set1") + 
+    scale_color_manual(breaks = c("AA:AA", "AB:AA", "BB:AA", "AA:AB",
+                                  "AB:AB", "BB:AB", "AA:BB", "AB:BB", "BB:BB"),
+                       #values = RColorBrewer::brewer.pal(9, "Set1")[9:1]) +
+                       values = c("#999999", "#F781BF", "#A65628","#9a9a00", "#FF7F00", "#984EA3", "#4DAF4A", "#377EB8", "#E41A1C")) +
+    stat_smooth(method="lm", show.legend = FALSE, formula = y~x) + 
+    labs(title=paste0("effect for markers ", basem, " x ", mar)) +
+    theme_bw()
+  print(p1)
+  
+  p2 <- ggplot(subplot, aes(Age, Dist, color=interactions, group=interactions)) +
+    geom_point(shape = 20, show.legend = FALSE) +
+    geom_line(aes(group = AnimalName, color = interactions), show.legend = FALSE, alpha = 0.2) +  
+    geom_smooth(method='lm', formula= y~x, show.legend = FALSE, size = 1) +
+    #scale_color_discrete("Genotype") +
+    labs(color = "Genotype") +
+    ylab("Total distance traveled / Chr14") +
+    xlab("Test age / Chr5") +
+    #scale_color_brewer(palette = "Set1") + 
+    scale_color_manual(breaks = c("AA:AA", "AB:AA", "BB:AA", "AA:AB",
+                                  "AB:AB", "BB:AB", "AA:BB", "AB:BB", "BB:BB"),
+                       #values = RColorBrewer::brewer.pal(9, "Set1")[9:1]) +
+                       values = c("#999999", "#F781BF", "#A65628","#9a9a00", "#FF7F00", "#984EA3", "#4DAF4A", "#377EB8", "#E41A1C")) +
+    stat_smooth(method="lm", show.legend = FALSE, formula = y~x) + 
+    labs(title=paste0("Interaction effect between Chr5 and Chr14")) +
+    facet_grid(rows = vars(subplot[, basem]), cols = vars(subplot[, mar])) +
+    theme_bw() +
+    theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank()) +
+    theme(plot.title = element_text(hjust = 0.5))
+  print(p2)
+  
+pp2 = plot_grid(figB, figC, labels = c("B", "C"), align = 'h', ncol=2)
+pp3 = plot_grid(figD, p2, labels = c("D", "E"), align = 'h',ncol=2)
+pdf("output/figure_panel.pdf", width = 8.5, height = 11)
+plot_grid(figA, labels = c('A', ''),
+  pp2,
+  pp3,
+  nrow = 3
+)
+dev.off()
+
+plot_grid(figA, labels = c('A', ''),
+  pp2,
+  pp3,
+  nrow = 3
+)
+```
+
