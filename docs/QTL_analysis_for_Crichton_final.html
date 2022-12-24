@@ -1,0 +1,2568 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="Hao He" />
+
+
+<title>QTL analysis for Crichton final</title>
+
+<script src="site_libs/header-attrs-2.6/header-attrs.js"></script>
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
+
+<link rel="icon" href="https://github.com/workflowr/workflowr-assets/raw/master/img/reproducible.png">
+<!-- Add a small amount of space between sections. -->
+<style type="text/css">
+div.section {
+  padding-top: 12px;
+}
+</style>
+
+
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+</style>
+
+
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+  padding-top: 51px;
+  padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h1 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h2 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h3 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h4 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h5 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h6 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #ffffff;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.parent().addClass('active');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row-fluid">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">QTL_analysis_for_Crichton</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li>
+  <a href="about.html">About</a>
+</li>
+<li>
+  <a href="license.html">License</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="https://github.com/KumarLabJax/QTL_analysis_for_Crichton">
+    <span class="fas fa-github"></span>
+     
+    Source code
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">QTL analysis for Crichton final</h1>
+<h4 class="author">Hao He</h4>
+
+</div>
+
+
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-report" data-toggle="collapse" data-target="#workflowr-report">
+<span class="glyphicon glyphicon-list" aria-hidden="true"></span> workflowr <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
+</button>
+</p>
+<div id="workflowr-report" class="collapse">
+<ul class="nav nav-tabs">
+<li class="active">
+<a data-toggle="tab" href="#summary">Summary</a>
+</li>
+<li>
+<a data-toggle="tab" href="#checks"> Checks <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> </a>
+</li>
+<li>
+<a data-toggle="tab" href="#versions">Past versions</a>
+</li>
+</ul>
+<div class="tab-content">
+<div id="summary" class="tab-pane fade in active">
+<p>
+<strong>Last updated:</strong> 2022-12-24
+</p>
+<p>
+<strong>Checks:</strong> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 7 <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span> 0
+</p>
+<p>
+<strong>Knit directory:</strong> <code>QTL_analysis_for_Crichton/</code> <span class="glyphicon glyphicon-question-sign" aria-hidden="true" title="This is the local directory in which the code in this file was executed."> </span>
+</p>
+<p>
+This reproducible <a href="http://rmarkdown.rstudio.com">R Markdown</a> analysis was created with <a
+  href="https://github.com/jdblischak/workflowr">workflowr</a> (version 1.6.2). The <em>Checks</em> tab describes the reproducibility checks that were applied when the results were created. The <em>Past versions</em> tab lists the development history.
+</p>
+<hr>
+</div>
+<div id="checks" class="tab-pane fade">
+<div id="workflowr-checks" class="panel-group">
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRMarkdownfilestronguptodate"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>R Markdown file:</strong> up-to-date </a>
+</p>
+</div>
+<div id="strongRMarkdownfilestronguptodate" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great! Since the R Markdown file has been committed to the Git repository, you know the exact version of the code that produced these results.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongEnvironmentstrongempty"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Environment:</strong> empty </a>
+</p>
+</div>
+<div id="strongEnvironmentstrongempty" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! The global environment was empty. Objects defined in the global environment can affect the analysis in your R Markdown file in unknown ways. For reproduciblity it’s best to always run the code in an empty environment.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSeedstrongcodesetseed20221224code"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Seed:</strong> <code>set.seed(20221224)</code> </a>
+</p>
+</div>
+<div id="strongSeedstrongcodesetseed20221224code" class="panel-collapse collapse">
+<div class="panel-body">
+<p>The command <code>set.seed(20221224)</code> was run prior to running the code in the R Markdown file. Setting a seed ensures that any results that rely on randomness, e.g. subsampling or permutations, are reproducible.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSessioninformationstrongrecorded"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Session information:</strong> recorded </a>
+</p>
+</div>
+<div id="strongSessioninformationstrongrecorded" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! Recording the operating system, R version, and package versions is critical for reproducibility.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongCachestrongnone"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Cache:</strong> none </a>
+</p>
+</div>
+<div id="strongCachestrongnone" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Nice! There were no cached chunks for this analysis, so you can be confident that you successfully produced the results during this run.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongFilepathsstrongrelative"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>File paths:</strong> relative </a>
+</p>
+</div>
+<div id="strongFilepathsstrongrelative" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! Using relative paths to the files within your workflowr project makes it easier to run your code on other machines.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsghpzDI8GUbOn55ggZeyUSPPFuAecDo3L639ryAfgithubcomKumarLabJaxQTLanalysisforCrichtontree92ecd1dfc4bc99ae643b1bd8d9dd4368d3b48541targetblank92ecd1da"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://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@github.com/KumarLabJax/QTL_analysis_for_Crichton/tree/92ecd1dfc4bc99ae643b1bd8d9dd4368d3b48541" target="_blank">92ecd1d</a> </a>
+</p>
+</div>
+<div id="strongRepositoryversionstrongahrefhttpsghpzDI8GUbOn55ggZeyUSPPFuAecDo3L639ryAfgithubcomKumarLabJaxQTLanalysisforCrichtontree92ecd1dfc4bc99ae643b1bd8d9dd4368d3b48541targetblank92ecd1da" class="panel-collapse collapse">
+<div class="panel-body">
+<p>
+Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility.
+</p>
+<p>
+The results in this page were generated with repository version <a href="https://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@github.com/KumarLabJax/QTL_analysis_for_Crichton/tree/92ecd1dfc4bc99ae643b1bd8d9dd4368d3b48541" target="_blank">92ecd1d</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
+</p>
+<p>
+Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
+</p>
+<pre><code>
+Ignored files:
+    Ignored:    .Rproj.user/
+
+Untracked files:
+    Untracked:  analysis/workflow_proc.R
+    Untracked:  data/Report-12-27-2019.csv
+    Untracked:  data/WT144_GBS_Rqtl_input.csv
+    Untracked:  output/WT144_effect_for_marker__int_chr5-136332619-.-C-A.pdf
+    Untracked:  output/WT144_effect_for_marker_plots_TotalDist_vs_TestAge_by_marker.pdf
+    Untracked:  output/WT144_plot-Intercept.pdf
+    Untracked:  output/WT144_plot-Slope.pdf
+    Untracked:  output/WT144_plot-TestAge.x.pdf
+    Untracked:  output/WT144_plot-TestAge.y.pdf
+    Untracked:  output/WT144_plot-TotalDist_1.pdf
+    Untracked:  output/WT144_plot-TotalDist_2.pdf
+    Untracked:  output/WT144_plot-TotalDist_3.pdf
+    Untracked:  output/WT144_plot-base.x.pdf
+    Untracked:  output/WT144_plot-base.y.pdf
+    Untracked:  output/figure_panel.pdf
+    Untracked:  output/qtl.out.obj.mixedmodel.RData
+
+</code></pre>
+<p>
+Note that any generated files, e.g. HTML, png, CSS, etc., are not included in this status report because it is ok for generated content to have uncommitted changes.
+</p>
+</div>
+</div>
+</div>
+</div>
+<hr>
+</div>
+<div id="versions" class="tab-pane fade">
+
+<p>
+These are the previous versions of the repository in which changes were made to the R Markdown (<code>analysis/QTL_analysis_for_Crichton_final.Rmd</code>) and HTML (<code>docs/QTL_analysis_for_Crichton_final.html</code>) files. If you’ve configured a remote Git repository (see <code>?wflow_git_remote</code>), click on the hyperlinks in the table below to view the files as they were in that past version.
+</p>
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+File
+</th>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+<th>
+Message
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://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@github.com/KumarLabJax/QTL_analysis_for_Crichton/blob/92ecd1dfc4bc99ae643b1bd8d9dd4368d3b48541/analysis/QTL_analysis_for_Crichton_final.Rmd" target="_blank">92ecd1d</a>
+</td>
+<td>
+xhyuo
+</td>
+<td>
+2022-12-24
+</td>
+<td>
+First build
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<hr>
+</div>
+</div>
+</div>
+<div id="library" class="section level3">
+<h3>Library</h3>
+<pre class="r"><code>library(ggplot2)
+library(gridExtra)
+library(qtl)
+library(qtlcharts)
+library(tidyverse)
+library(lme4)
+library(lmerTest)
+library(qtl2)
+library(cowplot)</code></pre>
+</div>
+<div id="load-qtl-data-and-plot-summary" class="section level3">
+<h3>Load qtl data and plot summary</h3>
+<pre class="r"><code>WT144 &lt;- read.cross(format = &quot;csv&quot;, file = &quot;data/WT144_GBS_Rqtl_input.csv&quot;, genotypes = c(&quot;A&quot;, &quot;H&quot;, &quot;B&quot;))</code></pre>
+<pre><code> --Read the following data:
+     309  individuals
+     225  markers
+     11  phenotypes
+ --Cross type: f2 </code></pre>
+<pre class="r"><code>chror &lt;- as.character(1:19)
+WT144$geno &lt;- WT144$geno[chror]
+summary(WT144)</code></pre>
+<pre><code>    F2 intercross
+
+    No. individuals:    309 
+
+    No. phenotypes:     11 
+    Percent phenotyped: 100 100 100 99.7 100 100 99.7 90.9 100 99.7 90.9 
+
+    No. chromosomes:    19 
+        Autosomes:      1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 
+
+    Total markers:      225 
+    No. markers:        18 23 17 15 46 1 19 4 8 3 5 18 11 10 2 4 7 2 12 
+    Percent genotyped:  85 
+    Genotypes (%):      AA:40.6  AB:46.9  BB:12.5  not BB:0.0  not AA:0.0 </code></pre>
+<pre class="r"><code>plotMissing(WT144, main=&quot;&quot;)
+
+#drop.nullmarkers
+WT144 &lt;- drop.nullmarkers(WT144)
+plotMissing(WT144, main=&quot;&quot;)</code></pre>
+<p><img src="figure/QTL_analysis_for_Crichton_final.Rmd/Load%20qtl%20data%20and%20plot%20summary-1.png" width="960" style="display: block; margin: auto;" /></p>
+</div>
+<div id="genotype_distribution_pre" class="section level3">
+<h3>Genotype_distribution_pre</h3>
+<pre class="r"><code># Plot the distribution of homo/hetero for each marker
+af &lt;- NULL
+for (chr in names(WT144$geno)){
+  af &lt;- rbind(af, data.frame(chr=chr,
+                             A=colSums(WT144$geno[[chr]]$data == 1, na.rm = T),
+                             H=colSums(WT144$geno[[chr]]$data == 2, na.rm = T),
+                             B=colSums(WT144$geno[[chr]]$data == 3, na.rm = T),
+                             N=colSums(is.na(WT144$geno[[chr]]$data))))
+}
+af$chr &lt;- factor(af$chr, levels = names(WT144$geno))
+af$ID &lt;- 1:nrow(af)
+#plot
+genotype_distribution_pre &lt;- ggplot(af) + 
+  geom_point(aes(ID, A), color = &quot;red&quot;) + 
+  geom_point(aes(ID, B), color=&quot;purple&quot;) + 
+  geom_point(aes(ID, H), color=&quot;green&quot;) + 
+  geom_point(aes(ID, N), color=&quot;black&quot;) + 
+  facet_grid(~chr, scales = &quot;free&quot;) +
+  ylab(&quot;Frequency&quot;) + 
+  theme(text = element_text(size = 14),
+        axis.text.x = element_blank(),
+        axis.ticks = element_blank())
+#
+print(genotype_distribution_pre)</code></pre>
+<p><img src="figure/QTL_analysis_for_Crichton_final.Rmd/Genotype_distribution_pre-1.png" width="1152" style="display: block; margin: auto;" /></p>
+</div>
+<div id="genotype_distribution_post" class="section level3">
+<h3>Genotype_distribution_post</h3>
+<pre class="r"><code># Choose who to drop. I chose A &gt; H/4, B &gt; H/4, H &gt; (A+B)/2
+dropm &lt;- rownames(af)[af$A &lt; af$H/4 | af$B &lt; af$H/4 | af$H &lt; (af$A+af$B)/2 | af$N &gt; (af$A+af$B+af$H)] 
+WT144 &lt;- drop.markers(WT144, dropm)
+# Plot again
+af &lt;- NULL
+for (chr in names(WT144$geno)){
+  af &lt;- rbind(af, data.frame(chr=chr,
+                             A=colSums(WT144$geno[[chr]]$data == 1, na.rm = T),
+                             H=colSums(WT144$geno[[chr]]$data == 2, na.rm = T),
+                             B=colSums(WT144$geno[[chr]]$data == 3, na.rm = T),
+                             N=colSums(is.na(WT144$geno[[chr]]$data))))
+}
+af$chr &lt;- factor(af$chr, levels = names(WT144$geno))
+af$ID &lt;- 1:nrow(af)
+#plot
+genotype_distribution_post &lt;- ggplot(af) + 
+  geom_point(aes(ID, A), color = &quot;red&quot;) + 
+  geom_point(aes(ID, B), color=&quot;purple&quot;) + 
+  geom_point(aes(ID, H), color=&quot;green&quot;) + 
+  geom_point(aes(ID, N), color=&quot;black&quot;) + 
+  facet_grid(~chr, scales = &quot;free&quot;) +
+  ylab(&quot;Frequency&quot;) + 
+  theme(text = element_text(size = 14),
+        axis.text.x = element_blank(),
+        axis.ticks = element_blank())
+
+print(genotype_distribution_post)</code></pre>
+<p><img src="figure/QTL_analysis_for_Crichton_final.Rmd/Genotype_distribution_post-1.png" width="1152" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>plotMap(WT144)</code></pre>
+<p><img src="figure/QTL_analysis_for_Crichton_final.Rmd/Genotype_distribution_post-2.png" width="1152" style="display: block; margin: auto;" /></p>
+</div>
+<div id="process-phenotype-on-the-genotyped-animals" class="section level3">
+<h3>Process phenotype on the genotyped animals</h3>
+<pre class="r"><code>#read data Report-12-27-2019.csv and filter to the 309 animals which also have genotypes. 
+report &lt;- readr::read_csv(&quot;data/Report-12-27-2019.csv&quot;) %&gt;% 
+  dplyr::select(animal_name, gender, TotalDist, TestAge, test.no) %&gt;%
+  dplyr::filter(animal_name %in% WT144$pheno$AnimalName) %&gt;% #filter to the animals with genotypes
+  dplyr::mutate(across(c(gender, test.no), as.factor))
+#plot TotalDist vs test age among 309 animals
+p6 &lt;- ggplot(data = report,  
+             mapping = aes(x = TestAge, y = TotalDist, color = test.no)) +
+  geom_point(aes(shape=gender)) +
+  geom_smooth(method=lm)
+print(p6)</code></pre>
+<p><img src="figure/QTL_analysis_for_Crichton_final.Rmd/Process%20phenotype%20on%20the%20genotyped%20animals-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>#plot TotalDist distribution across test.no among 309 animals
+p7 &lt;- ggplot(data = report,  
+             mapping = aes(x = test.no, y = TotalDist, color = test.no)) +
+  geom_boxplot()
+print(p7)</code></pre>
+<p><img src="figure/QTL_analysis_for_Crichton_final.Rmd/Process%20phenotype%20on%20the%20genotyped%20animals-2.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>#plot histgram for TotalDist among 309 animals
+p8 &lt;- ggplot(data = report,  
+             mapping = aes(x = TotalDist, fill = test.no)) +
+  geom_histogram() +
+  facet_grid(test.no ~ .)
+print(p8)</code></pre>
+<p><img src="figure/QTL_analysis_for_Crichton_final.Rmd/Process%20phenotype%20on%20the%20genotyped%20animals-3.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>#plot histgram for TotalDist for genders with mean lines among 309 animals
+p9 &lt;- ggplot(data = report,  
+             mapping = aes(x = TotalDist, fill = gender)) +
+  geom_histogram()
+print(p9)</code></pre>
+<p><img src="figure/QTL_analysis_for_Crichton_final.Rmd/Process%20phenotype%20on%20the%20genotyped%20animals-4.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>#a random intercept for each animal, 
+#and a random slope of TestAge for each animal 
+#This allows both the intercept and the slope of TestAge to vary across animals
+res &lt;- lmer(TotalDist ~ TestAge + (1 + TestAge|animal_name),
+              data = report)
+summary(res)</code></pre>
+<pre><code>Linear mixed model fit by REML. t-tests use Satterthwaite&#39;s method [
+lmerModLmerTest]
+Formula: TotalDist ~ TestAge + (1 + TestAge | animal_name)
+   Data: report
+
+REML criterion at convergence: 16596.9
+
+Scaled residuals: 
+    Min      1Q  Median      3Q     Max 
+-3.5368 -0.4085 -0.0295  0.3694  3.7790 
+
+Random effects:
+ Groups      Name        Variance Std.Dev. Corr 
+ animal_name (Intercept) 12321442 3510.2        
+             TestAge         4265   65.3   -0.96
+ Residual                 2173666 1474.3        
+Number of obs: 898, groups:  animal_name, 309
+
+Fixed effects:
+             Estimate Std. Error        df t value Pr(&gt;|t|)    
+(Intercept) 10338.640    302.752   321.518  34.149  &lt; 2e-16 ***
+TestAge       -26.522      4.333   317.190  -6.121 2.75e-09 ***
+---
+Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+
+Correlation of Fixed Effects:
+        (Intr)
+TestAge -0.918
+optimizer (nloptwrap) convergence code: 0 (OK)
+Model failed to converge with max|grad| = 1.58588 (tol = 0.002, component 1)
+Model is nearly unidentifiable: very large eigenvalue
+ - Rescale variables?</code></pre>
+<pre class="r"><code>confint(res, level = 0.95, method = &quot;Wald&quot;)</code></pre>
+<pre><code>                 2.5 %      97.5 %
+.sig01              NA          NA
+.sig02              NA          NA
+.sig03              NA          NA
+.sigma              NA          NA
+(Intercept) 9745.25700 10932.02232
+TestAge      -35.01462   -18.02879</code></pre>
+<pre class="r"><code>#there is strong evidence that TestAge significantly decreased TotalDist.
+
+res.std &lt;- resid(res)/sd(resid(res))
+plot(res.std, ylab=&quot;Standardized Residuals&quot;)</code></pre>
+<p><img src="figure/QTL_analysis_for_Crichton_final.Rmd/Process%20phenotype%20on%20the%20genotyped%20animals-5.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>ggplot(as.data.frame(res.std), aes(sample = res.std)) +
+  geom_qq() +
+  geom_qq_line()</code></pre>
+<p><img src="figure/QTL_analysis_for_Crichton_final.Rmd/Process%20phenotype%20on%20the%20genotyped%20animals-6.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>#to get the fitted Intercept and Slope
+TotalDist_animal &lt;- coef(res)$animal_name
+colnames(TotalDist_animal) &lt;- c(&quot;Intercept&quot;, &quot;Slope&quot;)
+TotalDist_animal$AnimalName &lt;- rownames(TotalDist_animal)
+
+#add TotalDist_animal to the phenotype df in WT144
+WT144$pheno &lt;- left_join(WT144$pheno, TotalDist_animal, by = &quot;AnimalName&quot;)
+plotPheno(WT144, pheno.col=12, xlab = &quot;&quot;)</code></pre>
+<p><img src="figure/QTL_analysis_for_Crichton_final.Rmd/Process%20phenotype%20on%20the%20genotyped%20animals-7.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>plotPheno(WT144, pheno.col=13, xlab = &quot;&quot;)</code></pre>
+<p><img src="figure/QTL_analysis_for_Crichton_final.Rmd/Process%20phenotype%20on%20the%20genotyped%20animals-8.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="run-qtl" class="section level3">
+<h3>Run qtl</h3>
+<pre class="r"><code>#run qtl
+print(summary(WT144))</code></pre>
+<pre><code>    F2 intercross
+
+    No. individuals:    309 
+
+    No. phenotypes:     13 
+    Percent phenotyped: 100 100 100 99.7 100 100 99.7 90.9 100 99.7 90.9 100 100 
+
+    No. chromosomes:    18 
+        Autosomes:      1 2 3 4 5 7 8 9 10 11 12 13 14 15 16 17 18 19 
+
+    Total markers:      78 
+    No. markers:        5 8 7 1 22 4 3 5 1 1 4 2 4 2 2 2 2 3 
+    Percent genotyped:  98 
+    Genotypes (%):      AA:25.9  AB:50.7  BB:23.3  not BB:0.0  not AA:0.0 </code></pre>
+<pre class="r"><code>WT144 &lt;- drop.nullmarkers(WT144)
+covars &lt;- model.matrix(~ Gender, WT144$pheno)[,-1]
+#idx 
+idx &lt;- c(11, 13)
+out.mr &lt;- operm &lt;- st &lt;- list()
+#loop for each pheno
+for (i in 1:length(idx)){
+  out.mr[[i]] &lt;- scanone(WT144, pheno.col=idx[[i]], method=&quot;mr&quot;, addcovar=covars)
+  out.mr[[i]]$lod[is.infinite(out.mr[[i]]$lod)]=0
+  print(summary(out.mr[[i]]))
+  #operm
+  operm[[i]] &lt;-scanone(WT144, pheno.col=idx[[i]], n.perm=1000, method=&quot;mr&quot;, addcovar=covars)
+  print(summary(operm[[i]]))
+  #scantwo
+  st[[i]] &lt;- scantwo(WT144, pheno.col = idx[[i]], method=&quot;mr&quot;)
+}</code></pre>
+<pre><code>Warning in checkcovar(cross, pheno.col, addcovar, intcovar, perm.strata, : Dropping 28 individuals with missing phenotypes.</code></pre>
+<pre><code>                      chr  pos     lod
+chr1-188155143-.-G-A    1 92.2  1.1232
+chr2-137498061-.-T-A    2 67.9  1.8838
+chr3-98881230-.-G-A     3 42.9  1.1117
+chr4-32821418-.-C-T     4 14.4  0.8050
+chr5-136844385-.-T-G    5 76.1 26.1801
+chr7-35061547-.-A-G     7 20.9  0.4206
+chr8-112465004-.-G-A    8 58.6  0.1365
+chr9-64698947-.-C-T     9 34.9  0.2296
+chr10-24134777-.-A-T   10 11.5  2.0508
+chr11-96730656-.-A-G   11 60.1  0.0908
+chr12-43136399-.-A-T   12 19.5  0.9613
+chr13-115031098-.-T-C  13 64.6  2.2455
+chr14-69691477-.-G-T   14 36.1  6.0905
+chr15-58605950-.-C-G   15 25.0  0.0869
+chr16-32593683-.-A-G   16 23.0  0.2049
+chr17-69219676-.-G-A   17 40.3  0.7094
+chr18-51300216-.-T-A   18 27.9  0.1625
+chr19-45958839-.-A-T   19 38.8  0.7538</code></pre>
+<pre><code>Warning in checkcovar(cross, pheno.col, addcovar, intcovar, perm.strata, : Dropping 28 individuals with missing phenotypes.</code></pre>
+<pre><code>Permutation 20 
+Permutation 40 
+Permutation 60 
+Permutation 80 
+Permutation 100 
+Permutation 120 
+Permutation 140 
+Permutation 160 
+Permutation 180 
+Permutation 200 
+Permutation 220 
+Permutation 240 
+Permutation 260 
+Permutation 280 
+Permutation 300 
+Permutation 320 
+Permutation 340 
+Permutation 360 
+Permutation 380 
+Permutation 400 
+Permutation 420 
+Permutation 440 
+Permutation 460 
+Permutation 480 
+Permutation 500 
+Permutation 520 
+Permutation 540 
+Permutation 560 
+Permutation 580 
+Permutation 600 
+Permutation 620 
+Permutation 640 
+Permutation 660 
+Permutation 680 
+Permutation 700 
+Permutation 720 
+Permutation 740 
+Permutation 760 
+Permutation 780 
+Permutation 800 
+Permutation 820 
+Permutation 840 
+Permutation 860 
+Permutation 880 
+Permutation 900 
+Permutation 920 
+Permutation 940 
+Permutation 960 
+Permutation 980 
+Permutation 1000 
+LOD thresholds (1000 permutations)
+     lod
+5%  3.10
+10% 2.68</code></pre>
+<pre><code>Warning in checkcovar(cross, pheno.col, addcovar, intcovar, perm.strata, : Dropping 28 individuals with missing phenotypes.</code></pre>
+<pre><code> --Running scanone
+ --Running scantwo
+ (1,1)
+ (1,2)
+ (1,3)
+ (1,4)
+ (1,5)
+ (1,7)
+ (1,8)
+ (1,9)
+ (1,10)
+ (1,11)
+ (1,12)
+ (1,13)
+ (1,14)
+ (1,15)
+ (1,16)
+ (1,17)
+ (1,18)
+ (1,19)
+ (2,2)
+ (2,3)
+ (2,4)
+ (2,5)
+ (2,7)
+ (2,8)
+ (2,9)
+ (2,10)
+ (2,11)
+ (2,12)
+ (2,13)
+ (2,14)
+ (2,15)
+ (2,16)
+ (2,17)
+ (2,18)
+ (2,19)
+ (3,3)
+ (3,4)
+ (3,5)
+ (3,7)
+ (3,8)
+ (3,9)
+ (3,10)
+ (3,11)
+ (3,12)
+ (3,13)
+ (3,14)
+ (3,15)
+ (3,16)
+ (3,17)
+ (3,18)
+ (3,19)
+ (4,4)
+ (4,5)
+ (4,7)
+ (4,8)
+ (4,9)
+ (4,10)
+ (4,11)
+ (4,12)
+ (4,13)
+ (4,14)
+ (4,15)
+ (4,16)
+ (4,17)
+ (4,18)
+ (4,19)
+ (5,5)
+ (5,7)
+ (5,8)
+ (5,9)
+ (5,10)
+ (5,11)
+ (5,12)
+ (5,13)
+ (5,14)
+ (5,15)
+ (5,16)
+ (5,17)
+ (5,18)
+ (5,19)
+ (7,7)
+ (7,8)
+ (7,9)
+ (7,10)
+ (7,11)
+ (7,12)
+ (7,13)
+ (7,14)
+ (7,15)
+ (7,16)
+ (7,17)
+ (7,18)
+ (7,19)
+ (8,8)
+ (8,9)
+ (8,10)
+ (8,11)
+ (8,12)
+ (8,13)
+ (8,14)
+ (8,15)
+ (8,16)
+ (8,17)
+ (8,18)
+ (8,19)
+ (9,9)
+ (9,10)
+ (9,11)
+ (9,12)
+ (9,13)
+ (9,14)
+ (9,15)
+ (9,16)
+ (9,17)
+ (9,18)
+ (9,19)
+ (10,10)
+ (10,11)
+ (10,12)
+ (10,13)
+ (10,14)
+ (10,15)
+ (10,16)
+ (10,17)
+ (10,18)
+ (10,19)
+ (11,11)
+ (11,12)
+ (11,13)
+ (11,14)
+ (11,15)
+ (11,16)
+ (11,17)
+ (11,18)
+ (11,19)
+ (12,12)
+ (12,13)
+ (12,14)
+ (12,15)
+ (12,16)
+ (12,17)
+ (12,18)
+ (12,19)
+ (13,13)
+ (13,14)
+ (13,15)
+ (13,16)
+ (13,17)
+ (13,18)
+ (13,19)
+ (14,14)
+ (14,15)
+ (14,16)
+ (14,17)
+ (14,18)
+ (14,19)
+ (15,15)
+ (15,16)
+ (15,17)
+ (15,18)
+ (15,19)
+ (16,16)
+ (16,17)
+ (16,18)
+ (16,19)
+ (17,17)
+ (17,18)
+ (17,19)
+ (18,18)
+ (18,19)
+ (19,19)
+                      chr  pos     lod
+chr1-65643621-.-C-A     1 33.3  1.4142
+chr2-137498061-.-T-A    2 67.9  2.3977
+chr3-59218564-.-T-A     3 29.0  1.5114
+chr4-32821418-.-C-T     4 14.4  0.9584
+chr5-136332619-.-C-A    5 76.0 28.2723
+chr7-35061547-.-A-G     7 20.9  0.2899
+chr8-112465004-.-G-A    8 58.6  0.2728
+chr9-69415567-.-T-A     9 38.6  0.5506
+chr10-24134777-.-A-T   10 11.5  2.1472
+chr11-96730656-.-A-G   11 60.1  0.2845
+chr12-43136399-.-A-T   12 19.5  1.1682
+chr13-115031098-.-T-C  13 64.6  2.0179
+chr14-69691477-.-G-T   14 36.1  6.3651
+chr15-58605950-.-C-G   15 25.0  0.2664
+chr16-32593683-.-A-G   16 23.0  0.4304
+chr17-69219676-.-G-A   17 40.3  0.9353
+chr18-89347666-.-A-G   18 59.0  0.0746
+chr19-45958839-.-A-T   19 38.8  0.5790
+Permutation 20 
+Permutation 40 
+Permutation 60 
+Permutation 80 
+Permutation 100 
+Permutation 120 
+Permutation 140 
+Permutation 160 
+Permutation 180 
+Permutation 200 
+Permutation 220 
+Permutation 240 
+Permutation 260 
+Permutation 280 
+Permutation 300 
+Permutation 320 
+Permutation 340 
+Permutation 360 
+Permutation 380 
+Permutation 400 
+Permutation 420 
+Permutation 440 
+Permutation 460 
+Permutation 480 
+Permutation 500 
+Permutation 520 
+Permutation 540 
+Permutation 560 
+Permutation 580 
+Permutation 600 
+Permutation 620 
+Permutation 640 
+Permutation 660 
+Permutation 680 
+Permutation 700 
+Permutation 720 
+Permutation 740 
+Permutation 760 
+Permutation 780 
+Permutation 800 
+Permutation 820 
+Permutation 840 
+Permutation 860 
+Permutation 880 
+Permutation 900 
+Permutation 920 
+Permutation 940 
+Permutation 960 
+Permutation 980 
+Permutation 1000 
+LOD thresholds (1000 permutations)
+     lod
+5%  3.10
+10% 2.75
+ --Running scanone
+ --Running scantwo
+ (1,1)
+ (1,2)
+ (1,3)
+ (1,4)
+ (1,5)
+ (1,7)
+ (1,8)
+ (1,9)
+ (1,10)
+ (1,11)
+ (1,12)
+ (1,13)
+ (1,14)
+ (1,15)
+ (1,16)
+ (1,17)
+ (1,18)
+ (1,19)
+ (2,2)
+ (2,3)
+ (2,4)
+ (2,5)
+ (2,7)
+ (2,8)
+ (2,9)
+ (2,10)
+ (2,11)
+ (2,12)
+ (2,13)
+ (2,14)
+ (2,15)
+ (2,16)
+ (2,17)
+ (2,18)
+ (2,19)
+ (3,3)
+ (3,4)
+ (3,5)
+ (3,7)
+ (3,8)
+ (3,9)
+ (3,10)
+ (3,11)
+ (3,12)
+ (3,13)
+ (3,14)
+ (3,15)
+ (3,16)
+ (3,17)
+ (3,18)
+ (3,19)
+ (4,4)
+ (4,5)
+ (4,7)
+ (4,8)
+ (4,9)
+ (4,10)
+ (4,11)
+ (4,12)
+ (4,13)
+ (4,14)
+ (4,15)
+ (4,16)
+ (4,17)
+ (4,18)
+ (4,19)
+ (5,5)
+ (5,7)
+ (5,8)
+ (5,9)
+ (5,10)
+ (5,11)
+ (5,12)
+ (5,13)
+ (5,14)
+ (5,15)
+ (5,16)
+ (5,17)
+ (5,18)
+ (5,19)
+ (7,7)
+ (7,8)
+ (7,9)
+ (7,10)
+ (7,11)
+ (7,12)
+ (7,13)
+ (7,14)
+ (7,15)
+ (7,16)
+ (7,17)
+ (7,18)
+ (7,19)
+ (8,8)
+ (8,9)
+ (8,10)
+ (8,11)
+ (8,12)
+ (8,13)
+ (8,14)
+ (8,15)
+ (8,16)
+ (8,17)
+ (8,18)
+ (8,19)
+ (9,9)
+ (9,10)
+ (9,11)
+ (9,12)
+ (9,13)
+ (9,14)
+ (9,15)
+ (9,16)
+ (9,17)
+ (9,18)
+ (9,19)
+ (10,10)
+ (10,11)
+ (10,12)
+ (10,13)
+ (10,14)
+ (10,15)
+ (10,16)
+ (10,17)
+ (10,18)
+ (10,19)
+ (11,11)
+ (11,12)
+ (11,13)
+ (11,14)
+ (11,15)
+ (11,16)
+ (11,17)
+ (11,18)
+ (11,19)
+ (12,12)
+ (12,13)
+ (12,14)
+ (12,15)
+ (12,16)
+ (12,17)
+ (12,18)
+ (12,19)
+ (13,13)
+ (13,14)
+ (13,15)
+ (13,16)
+ (13,17)
+ (13,18)
+ (13,19)
+ (14,14)
+ (14,15)
+ (14,16)
+ (14,17)
+ (14,18)
+ (14,19)
+ (15,15)
+ (15,16)
+ (15,17)
+ (15,18)
+ (15,19)
+ (16,16)
+ (16,17)
+ (16,18)
+ (16,19)
+ (17,17)
+ (17,18)
+ (17,19)
+ (18,18)
+ (18,19)
+ (19,19)</code></pre>
+<pre class="r"><code>save(out.mr, operm, st, file = &quot;output/qtl.out.obj.mixedmodel.final.RData&quot;)</code></pre>
+</div>
+<div id="plot-on-run-qtl" class="section level3">
+<h3>Plot on run qtl</h3>
+<pre class="r"><code>name = &quot;WT144_plot&quot;
+#print
+print(summary(WT144))</code></pre>
+<pre><code>    F2 intercross
+
+    No. individuals:    309 
+
+    No. phenotypes:     13 
+    Percent phenotyped: 100 100 100 99.7 100 100 99.7 90.9 100 99.7 90.9 100 100 
+
+    No. chromosomes:    18 
+        Autosomes:      1 2 3 4 5 7 8 9 10 11 12 13 14 15 16 17 18 19 
+
+    Total markers:      78 
+    No. markers:        5 8 7 1 22 4 3 5 1 1 4 2 4 2 2 2 2 3 
+    Percent genotyped:  98 
+    Genotypes (%):      AA:25.9  AB:50.7  BB:23.3  not BB:0.0  not AA:0.0 </code></pre>
+<pre class="r"><code>WT144 &lt;- drop.nullmarkers(WT144)
+covars &lt;- model.matrix(~ Gender, WT144$pheno)[,-1]
+#idx 
+idx &lt;- c(11, 13)
+#map
+map &lt;- purrr::map(WT144$geno, ~(.x$map))
+attr(map, &quot;is_x_chr&quot;) &lt;- structure(c(rep(FALSE,18)), names=c(1:5, 7:19))
+
+load(&quot;output/qtl.out.obj.mixedmodel.final.RData&quot;)
+#loop for each pheno
+for (i in 1:length(idx)){
+  print(colnames(WT144$pheno)[idx[[i]]])
+  #operm_hist
+  #pdf(paste0(&quot;output/&quot;, name,&quot;-&quot;, colnames(WT144$pheno)[idx[[i]]], &quot;.pdf&quot;), width = 10, height = 10)
+  plot(operm[[i]][!is.infinite(operm[[i]])], main=paste(name, colnames(WT144$pheno)[idx[[i]]], sep=&quot;-&quot;))
+  #mrscan_pheno
+  plot(out.mr[[i]], ylab=colnames(WT144$pheno)[idx[[i]]])
+  add.threshold(out.mr[[i]], perms = operm[[i]], alpha = 0.05, col=&quot;magenta&quot;)
+  #pxg
+  peak = summary(out.mr[[i]], threshold=summary(operm[[i]], alpha = 0.05)[[1]])
+  print(peak)
+  marker = c(&quot;chr5-136332619-.-C-A&quot;, &quot;chr14-69691477-.-G-T&quot;)
+  for (mar in marker){
+    par(mar=c(3, 5, 4, 3))
+    plotPXG(WT144, marker=mar, jitter = 0.25, pheno.col = idx[[i]], infer=F, main=paste(mar),
+            mgp=c(3.4,1,0))
+  }
+  #interaction_effect
+  effectplot(WT144, 
+             mname1 = marker[[1]], 
+             mname2 = marker[[2]], 
+             pheno.col = idx[[i]], add.legend=T, legend.lab = &quot;&quot;)
+  
+    ##Multiple-QTL analyses 
+  # After performing the single- and two-QTL genome scans, it’s best to bring the identified loci together into a joint model, which we then refine and from which we may explore the possibility of further QTL. In this effort, we work with “QTL objects” created by makeqtl(). We fit multiple-QTL models with fitqtl(). A number of additional functions will be introduced below.
+  #First, we create a QTL object containing the loci on chr 5 and 14. 
+  #chr5-136332619-.-C-A  75.97770
+  #chr14-69691477-.-G-T  36.07219
+  WT144 &lt;- sim.geno(WT144, n.draws=64)
+  qtl &lt;- makeqtl(WT144, chr=c(5,14), pos=c(75.97770, 36.07219), what=&quot;draws&quot;)
+  out.fq &lt;- fitqtl(WT144, pheno.col=idx[[i]], qtl=qtl) 
+  print(summary(out.fq))
+  #We may obtain the estimated effects of the QTL via get.ests=TRUE. We use dropone=FALSE to suppress the drop-one-term analysis.
+  print(summary(fitqtl(WT144, pheno.col=idx[[i]], qtl=qtl, get.ests=TRUE, dropone=FALSE)))
+  #To assess the possibility of an interaction between the two QTL, we may fit the model with the interaction, indicated via a model “formula”.
+  print(&quot;To assess the possibility of an interaction between the two QTL&quot;)
+  out.fqi &lt;- fitqtl(WT144, pheno.col=idx[[i]], qtl=qtl, formula=y~Q1+Q2+Q1:Q2) 
+  print(summary(out.fqi))
+  
+  #complete_scan2
+  plot(st[[i]])
+  #toptwo_scan2
+  plot(st[[i]], chr = summary(out.mr[[i]])[order(-summary(out.mr[[i]])$lod), &quot;chr&quot;][1:2])
+  #dev.off()
+}</code></pre>
+<pre><code>[1] &quot;TotalDist_3&quot;</code></pre>
+<p><img src="figure/QTL_analysis_for_Crichton_final.Rmd/Plot%20on%20run%20qtl-1.png" width="960" style="display: block; margin: auto;" /><img src="figure/QTL_analysis_for_Crichton_final.Rmd/Plot%20on%20run%20qtl-2.png" width="960" style="display: block; margin: auto;" /></p>
+<pre><code>                     chr  pos   lod
+chr5-136332619-.-C-A   5 76.0 26.18
+chr14-69691477-.-G-T  14 36.1  6.09</code></pre>
+<p><img src="figure/QTL_analysis_for_Crichton_final.Rmd/Plot%20on%20run%20qtl-3.png" width="960" style="display: block; margin: auto;" /><img src="figure/QTL_analysis_for_Crichton_final.Rmd/Plot%20on%20run%20qtl-4.png" width="960" style="display: block; margin: auto;" /><img src="figure/QTL_analysis_for_Crichton_final.Rmd/Plot%20on%20run%20qtl-5.png" width="960" style="display: block; margin: auto;" /></p>
+<pre><code>
+        fitqtl summary
+
+Method: multiple imputation 
+Model:  normal phenotype
+Number of observations : 281 
+
+Full model result
+----------------------------------  
+Model formula: y ~ Q1 + Q2 
+
+       df         SS        MS      LOD     %var Pvalue(Chi2) Pvalue(F)
+Model   4 3170953192 792738298 31.45606 40.28087            0         0
+Error 276 4701152932  17033163                                         
+Total 280 7872106124                                                   
+
+
+Drop one QTL at a time ANOVA table: 
+----------------------------------  
+        df Type III SS    LOD   %var F value Pvalue(Chi2) Pvalue(F)    
+5@76.0   2   2.423e+09 25.367 30.783   71.13            0   &lt; 2e-16 ***
+14@36.1  2   4.478e+08  5.552  5.688   13.14            0  3.52e-06 ***
+---
+Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+
+
+        fitqtl summary
+
+Method: multiple imputation 
+Model:  normal phenotype
+Number of observations : 281 
+
+Full model result
+----------------------------------  
+Model formula: y ~ Q1 + Q2 
+
+       df         SS        MS      LOD     %var Pvalue(Chi2) Pvalue(F)
+Model   4 3170953192 792738298 31.45606 40.28087            0         0
+Error 276 4701152932  17033163                                         
+Total 280 7872106124                                                   
+
+
+Estimated effects:
+-----------------
+              est      SE      t
+Intercept  7106.1   251.6 28.248
+5@76.0a    3549.0   349.2 10.162
+5@76.0d   -2908.4   497.5 -5.846
+14@36.1a   1818.7   380.1  4.785
+14@36.1d  -1335.8   503.4 -2.654
+
+[1] &quot;To assess the possibility of an interaction between the two QTL&quot;
+
+        fitqtl summary
+
+Method: multiple imputation 
+Model:  normal phenotype
+Number of observations : 281 
+
+Full model result
+----------------------------------  
+Model formula: y ~ Q1 + Q2 + Q1:Q2 
+
+       df         SS        MS      LOD     %var Pvalue(Chi2) Pvalue(F)
+Model   8 3558421585 444802698 36.70458 45.20292            0         0
+Error 272 4313684539  15859134                                         
+Total 280 7872106124                                                   
+
+
+Drop one QTL at a time ANOVA table: 
+----------------------------------  
+               df Type III SS    LOD   %var F value Pvalue(Chi2) Pvalue(F)    
+5@76.0          6   2.811e+09 30.615 35.705  29.539            0   &lt; 2e-16 ***
+14@36.1         6   8.353e+08 10.800 10.610   8.778            0  9.42e-09 ***
+5@76.0:14@36.1  4   3.875e+08  5.249  4.922   6.108            0  0.000101 ***
+---
+Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
+<p><img src="figure/QTL_analysis_for_Crichton_final.Rmd/Plot%20on%20run%20qtl-6.png" width="960" style="display: block; margin: auto;" /><img src="figure/QTL_analysis_for_Crichton_final.Rmd/Plot%20on%20run%20qtl-7.png" width="960" style="display: block; margin: auto;" /></p>
+<pre><code>[1] &quot;Slope&quot;</code></pre>
+<p><img src="figure/QTL_analysis_for_Crichton_final.Rmd/Plot%20on%20run%20qtl-8.png" width="960" style="display: block; margin: auto;" /><img src="figure/QTL_analysis_for_Crichton_final.Rmd/Plot%20on%20run%20qtl-9.png" width="960" style="display: block; margin: auto;" /></p>
+<pre><code>                     chr  pos   lod
+chr5-136332619-.-C-A   5 76.0 28.27
+chr14-69691477-.-G-T  14 36.1  6.37</code></pre>
+<p><img src="figure/QTL_analysis_for_Crichton_final.Rmd/Plot%20on%20run%20qtl-10.png" width="960" style="display: block; margin: auto;" /><img src="figure/QTL_analysis_for_Crichton_final.Rmd/Plot%20on%20run%20qtl-11.png" width="960" style="display: block; margin: auto;" /><img src="figure/QTL_analysis_for_Crichton_final.Rmd/Plot%20on%20run%20qtl-12.png" width="960" style="display: block; margin: auto;" /></p>
+<pre><code>
+        fitqtl summary
+
+Method: multiple imputation 
+Model:  normal phenotype
+Number of observations : 309 
+
+Full model result
+----------------------------------  
+Model formula: y ~ Q1 + Q2 
+
+       df        SS         MS      LOD    %var Pvalue(Chi2) Pvalue(F)
+Model   4  464953.1 116238.280 32.79348 38.6599            0         0
+Error 304  737722.4   2426.718                                        
+Total 308 1202675.5                                                   
+
+
+Drop one QTL at a time ANOVA table: 
+----------------------------------  
+        df Type III SS    LOD   %var F value Pvalue(Chi2) Pvalue(F)    
+5@76.0   2      355772 26.408 29.582   73.30            0   &lt; 2e-16 ***
+14@36.1  2       55117  4.835  4.583   11.36            0  1.75e-05 ***
+---
+Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+
+
+        fitqtl summary
+
+Method: multiple imputation 
+Model:  normal phenotype
+Number of observations : 309 
+
+Full model result
+----------------------------------  
+Model formula: y ~ Q1 + Q2 
+
+       df        SS         MS      LOD    %var Pvalue(Chi2) Pvalue(F)
+Model   4  464953.1 116238.280 32.79348 38.6599            0         0
+Error 304  737722.4   2426.718                                        
+Total 308 1202675.5                                                   
+
+
+Estimated effects:
+-----------------
+              est      SE      t
+Intercept -26.034   2.858 -9.109
+5@76.0a    40.855   3.927 10.405
+5@76.0d   -33.307   5.693 -5.850
+14@36.1a   19.763   4.307  4.589
+14@36.1d  -11.513   5.726 -2.011
+
+[1] &quot;To assess the possibility of an interaction between the two QTL&quot;
+
+        fitqtl summary
+
+Method: multiple imputation 
+Model:  normal phenotype
+Number of observations : 309 
+
+Full model result
+----------------------------------  
+Model formula: y ~ Q1 + Q2 + Q1:Q2 
+
+       df        SS        MS      LOD     %var Pvalue(Chi2) Pvalue(F)
+Model   8  507503.1 63437.888 36.77964 42.19784            0         0
+Error 300  695172.4  2317.241                                         
+Total 308 1202675.5                                                   
+
+
+Drop one QTL at a time ANOVA table: 
+----------------------------------  
+               df Type III SS    LOD   %var F value Pvalue(Chi2) Pvalue(F)    
+5@76.0          6      398322 30.394 33.120  28.649        0.000   &lt; 2e-16 ***
+14@36.1         6       97667  8.821  8.121   7.025        0.000  5.22e-07 ***
+5@76.0:14@36.1  4       42550  3.986  3.538   4.591        0.001    0.0013 ** 
+---
+Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
+<p><img src="figure/QTL_analysis_for_Crichton_final.Rmd/Plot%20on%20run%20qtl-13.png" width="960" style="display: block; margin: auto;" /><img src="figure/QTL_analysis_for_Crichton_final.Rmd/Plot%20on%20run%20qtl-14.png" width="960" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>#plot phenotypes: slope and totaldistance3
+plot(out.mr[[2]], col= &quot;blue&quot;, ylim = c(0, 30), ylab = &quot;LOD score&quot;)
+plot(out.mr[[1]], col= &quot;green&quot;, add=TRUE)
+abline(h=3.2, col=&quot;red&quot;, lty=2, lwd=3)
+# Add a legend
+legend(&quot;topright&quot;, 
+       legend=c(&quot;Slope&quot;, &quot;Total distance traveled&quot;),
+       col=c(&quot;blue&quot;, &quot;green&quot;), lty=1, cex=0.8)</code></pre>
+<p><img src="figure/QTL_analysis_for_Crichton_final.Rmd/Plot%20on%20run%20qtl-15.png" width="960" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>#only at chr 5 and 14
+#plot phenotypes: slope and totaldistance3
+plot(out.mr[[2]], col= &quot;blue&quot;, ylim = c(0, 30), ylab = &quot;LOD score&quot;, chr = c(5, 14))
+plot(out.mr[[1]], col= &quot;green&quot;, add=TRUE, chr = c(5, 14))
+abline(h=3.2, col=&quot;red&quot;, lty=2, lwd=3)
+# Add a legend
+legend(&quot;topright&quot;, 
+       legend=c(&quot;Slope&quot;, &quot;Total distance traveled&quot;),
+       col=c(&quot;blue&quot;, &quot;green&quot;), lty=1, cex=0.8)</code></pre>
+<p><img src="figure/QTL_analysis_for_Crichton_final.Rmd/Plot%20on%20run%20qtl-16.png" width="960" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>#Interval estimates of the location of QTL are commonly obtained via 1.5-LOD support intervals,
+lodint.chr5.slope = lodint(out.mr[[2]], chr= 5)
+lodint.chr5.slope</code></pre>
+<pre><code>                     chr      pos      lod
+chr5-133052642-.-T-G   5 72.40547 20.20584
+chr5-136332619-.-C-A   5 75.97770 28.27231
+chr5-138956439-.-T-C   5 77.76853 19.17899</code></pre>
+<pre class="r"><code>lodint.chr14.slope = lodint(out.mr[[2]], chr= 14)
+lodint.chr14.slope</code></pre>
+<pre><code>                      chr      pos      lod
+chr14-50642778-.-G-A   14 26.14972 3.390345
+chr14-69691477-.-G-T   14 36.07219 6.365103
+chr14-69691477-.-G-T   14 36.07219 6.365103</code></pre>
+<pre class="r"><code>lodint.chr5.TotalDist3 = lodint(out.mr[[1]], chr= 5)
+lodint.chr5.TotalDist3</code></pre>
+<pre><code>                     chr      pos      lod
+chr5-133052642-.-T-G   5 72.40547 20.78647
+chr5-136332619-.-C-A   5 75.97770 26.18011
+chr5-136844385-.-T-G   5 76.10078 26.18011
+chr5-138956439-.-T-C   5 77.76853 19.37148</code></pre>
+<pre class="r"><code>lodint.chr14.TotalDist3 = lodint(out.mr[[1]], chr= 14)
+lodint.chr14.TotalDist3</code></pre>
+<pre><code>                      chr      pos      lod
+chr14-62407765-.-T-A   14 33.20623 3.823005
+chr14-69691477-.-G-T   14 36.07219 6.090514
+chr14-69691477-.-G-T   14 36.07219 6.090514</code></pre>
+<pre class="r"><code>#loop for each pheno
+for (i in 1:length(idx)){  
+  print(colnames(WT144$pheno)[idx[[i]]])
+  #save plots
+  #operm_hist
+  pdf(paste0(&quot;output/&quot;, name,&quot;-&quot;, colnames(WT144$pheno)[idx[[i]]], &quot;.pdf&quot;), width = 10, height = 10)
+  plot(operm[[i]][!is.infinite(operm[[i]])], main=paste(name, colnames(WT144$pheno)[idx[[i]]], sep=&quot;-&quot;))
+  #mrscan_pheno
+  plot(out.mr[[i]], ylab=colnames(WT144$pheno)[idx[[i]]])
+  add.threshold(out.mr[[i]], perms = operm[[i]], alpha = 0.05, col=&quot;magenta&quot;)
+  #pxg
+  peak = summary(out.mr[[i]], threshold=summary(operm[[i]], alpha = 0.05)[[1]])
+  print(peak)
+  marker = c(&quot;chr5-136332619-.-C-A&quot;, &quot;chr14-69691477-.-G-T&quot;)
+  for (mar in marker){
+    par(mar=c(3, 5, 4, 3))
+    plotPXG(WT144, marker=mar, jitter = 0.25, pheno.col = idx[[i]], infer=F, main=paste(mar),
+            mgp=c(3.4,1,0))
+  }
+  #interaction_effect
+  effectplot(WT144, 
+             mname1 = rownames(peak)[1], 
+             mname2 = rownames(peak)[2], 
+             pheno.col = idx[[i]], add.legend=T, legend.lab = &quot;&quot;)
+  
+     ##Multiple-QTL analyses 
+  # After performing the single- and two-QTL genome scans, it’s best to bring the identified loci together into a joint model, which we then refine and from which we may explore the possibility of further QTL. In this effort, we work with “QTL objects” created by makeqtl(). We fit multiple-QTL models with fitqtl(). A number of additional functions will be introduced below.
+  #First, we create a QTL object containing the loci on chr 5 and 14. 
+  #chr5-136332619-.-C-A  75.97770
+  #chr14-69691477-.-G-T  36.07219
+  WT144 &lt;- sim.geno(WT144, n.draws=64)
+  qtl &lt;- makeqtl(WT144, chr=c(5,14), pos=c(75.97770, 36.07219), what=&quot;draws&quot;)
+  out.fq &lt;- fitqtl(WT144, pheno.col=idx[[i]], qtl=qtl, method = &quot;hk&quot;) 
+  print(summary(out.fq))
+  #We may obtain the estimated effects of the QTL via get.ests=TRUE. We use dropone=FALSE to suppress the drop-one-term analysis.
+  print(summary(fitqtl(WT144, pheno.col=idx[[i]], qtl=qtl, method=&quot;hk&quot;, get.ests=TRUE, dropone=FALSE)))
+  #To assess the possibility of an interaction between the two QTL, we may fit the model with the interaction, indicated via a model “formula”.
+  print(&quot;To assess the possibility of an interaction between the two QTL&quot;)
+  out.fqi &lt;- fitqtl(WT144, pheno.col=idx[[i]], qtl=qtl, method=&quot;hk&quot;, formula=y~Q1+Q2+Q1:Q2) 
+  print(summary(out.fqi))
+  
+  #complete_scan2
+  plot(st[[i]])
+  #toptwo_scan2
+  plot(st[[i]], chr = summary(out.mr[[i]])[order(-summary(out.mr[[i]])$lod), &quot;chr&quot;][1:2])
+  dev.off()
+}</code></pre>
+<pre><code>[1] &quot;TotalDist_3&quot;</code></pre>
+<pre><code>                     chr  pos   lod
+chr5-136844385-.-T-G   5 76.1 26.18
+chr14-69691477-.-G-T  14 36.1  6.09</code></pre>
+<pre><code>
+        fitqtl summary
+
+Method: multiple imputation 
+Model:  normal phenotype
+Number of observations : 281 
+
+Full model result
+----------------------------------  
+Model formula: y ~ Q1 + Q2 
+
+       df         SS        MS      LOD     %var Pvalue(Chi2) Pvalue(F)
+Model   4 3170972617 792743154 31.45631 40.28112            0         0
+Error 276 4701133507  17033092                                         
+Total 280 7872106124                                                   
+
+
+Drop one QTL at a time ANOVA table: 
+----------------------------------  
+        df Type III SS    LOD   %var F value Pvalue(Chi2) Pvalue(F)    
+5@76.0   2   2.423e+09 25.367 30.783   71.13            0   &lt; 2e-16 ***
+14@36.1  2   4.478e+08  5.552  5.689   13.15            0  3.52e-06 ***
+---
+Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+
+
+        fitqtl summary
+
+Method: multiple imputation 
+Model:  normal phenotype
+Number of observations : 281 
+
+Full model result
+----------------------------------  
+Model formula: y ~ Q1 + Q2 
+
+       df         SS        MS      LOD     %var Pvalue(Chi2) Pvalue(F)
+Model   4 3170972617 792743154 31.45631 40.28112            0         0
+Error 276 4701133507  17033092                                         
+Total 280 7872106124                                                   
+
+
+Estimated effects:
+-----------------
+              est      SE      t
+Intercept  7106.2   251.6 28.249
+5@76.0a    3548.9   349.2 10.162
+5@76.0d   -2908.4   497.5 -5.846
+14@36.1a   1818.8   380.1  4.785
+14@36.1d  -1335.6   503.4 -2.653
+
+[1] &quot;To assess the possibility of an interaction between the two QTL&quot;
+
+        fitqtl summary
+
+Method: multiple imputation 
+Model:  normal phenotype
+Number of observations : 281 
+
+Full model result
+----------------------------------  
+Model formula: y ~ Q1 + Q2 + Q1:Q2 
+
+       df         SS        MS      LOD     %var Pvalue(Chi2) Pvalue(F)
+Model   8 3558447363 444805920 36.70494 45.20324            0         0
+Error 272 4313658761  15859040                                         
+Total 280 7872106124                                                   
+
+
+Drop one QTL at a time ANOVA table: 
+----------------------------------  
+               df Type III SS    LOD   %var F value Pvalue(Chi2) Pvalue(F)    
+5@76.0          6   2.811e+09 30.615 35.705  29.539            0   &lt; 2e-16 ***
+14@36.1         6   8.353e+08 10.801 10.611   8.778            0  9.41e-09 ***
+5@76.0:14@36.1  4   3.875e+08  5.249  4.922   6.108            0  0.000101 ***
+---
+Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
+<pre><code>[1] &quot;Slope&quot;</code></pre>
+<pre><code>                     chr  pos   lod
+chr5-136332619-.-C-A   5 76.0 28.27
+chr14-69691477-.-G-T  14 36.1  6.37</code></pre>
+<pre><code>
+        fitqtl summary
+
+Method: multiple imputation 
+Model:  normal phenotype
+Number of observations : 309 
+
+Full model result
+----------------------------------  
+Model formula: y ~ Q1 + Q2 
+
+       df        SS         MS      LOD     %var Pvalue(Chi2) Pvalue(F)
+Model   4  464846.8 116211.711 32.78381 38.65106            0         0
+Error 304  737828.6   2427.068                                         
+Total 308 1202675.5                                                    
+
+
+Drop one QTL at a time ANOVA table: 
+----------------------------------  
+        df Type III SS    LOD   %var F value Pvalue(Chi2) Pvalue(F)    
+5@76.0   2      355665 26.398 29.573   73.27            0   &lt; 2e-16 ***
+14@36.1  2       55228  4.843  4.592   11.38            0  1.72e-05 ***
+---
+Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+
+
+        fitqtl summary
+
+Method: multiple imputation 
+Model:  normal phenotype
+Number of observations : 309 
+
+Full model result
+----------------------------------  
+Model formula: y ~ Q1 + Q2 
+
+       df        SS         MS      LOD     %var Pvalue(Chi2) Pvalue(F)
+Model   4  464846.8 116211.711 32.78381 38.65106            0         0
+Error 304  737828.6   2427.068                                         
+Total 308 1202675.5                                                    
+
+
+Estimated effects:
+-----------------
+              est      SE      t
+Intercept -26.045   2.858 -9.113
+5@76.0a    40.839   3.926 10.402
+5@76.0d   -33.296   5.694 -5.848
+14@36.1a   19.766   4.308  4.588
+14@36.1d  -11.540   5.726 -2.015
+
+[1] &quot;To assess the possibility of an interaction between the two QTL&quot;
+
+        fitqtl summary
+
+Method: multiple imputation 
+Model:  normal phenotype
+Number of observations : 309 
+
+Full model result
+----------------------------------  
+Model formula: y ~ Q1 + Q2 + Q1:Q2 
+
+       df        SS        MS      LOD     %var Pvalue(Chi2) Pvalue(F)
+Model   8  507426.4 63428.302 36.77224 42.19147            0         0
+Error 300  695249.1  2317.497                                         
+Total 308 1202675.5                                                   
+
+
+Drop one QTL at a time ANOVA table: 
+----------------------------------  
+               df Type III SS    LOD   %var F value Pvalue(Chi2) Pvalue(F)    
+5@76.0          6      398245 30.386 33.113  28.640        0.000   &lt; 2e-16 ***
+14@36.1         6       97808  8.832  8.133   7.034        0.000  5.11e-07 ***
+5@76.0:14@36.1  4       42580  3.988  3.540   4.593        0.001    0.0013 ** 
+---
+Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
+</div>
+<div id="plot-the-dist_vs_age-separate-by-genotype-for-each-marker" class="section level3">
+<h3>Plot the Dist_vs_age separate by genotype for each marker</h3>
+<pre class="r"><code>plot_graph &lt;- function(cross, name){
+  # Plot the Dist vs age, separate by genotype for each marker
+  allphen &lt;- cross$pheno
+  allgeno &lt;- as.data.frame(pull.geno(cross))
+  rownames(allgeno) &lt;- cross$pheno$AnimalName
+  allphen &lt;- merge(allphen, allgeno, by.x=&quot;AnimalName&quot;, by.y=&quot;row.names&quot;, all.x=TRUE)
+  pdf(paste0(&quot;output/&quot;, name, &quot;_TotalDist_vs_TestAge_by_marker.pdf&quot;))
+  for (mar in colnames(allgeno)){
+    subplot &lt;- allphen[!is.na(allphen[,mar, drop=FALSE]),] %&gt;% 
+      pivot_longer(cols = starts_with(&quot;TestAge_&quot;), names_to=&quot;test.no&quot;, values_to = &quot;Age&quot;) %&gt;%
+      separate(test.no, c(&quot;empty1&quot;, &quot;test1&quot;)) %&gt;%
+      pivot_longer(cols = starts_with(&quot;TotalDist_&quot;), names_to=&quot;test.no.2&quot;, values_to = &quot;Dist&quot;) %&gt;%
+      separate(test.no.2, c(&quot;empty2&quot;, &quot;test2&quot;)) %&gt;% filter(test1==test2)
+    subplot &lt;- as.data.frame(subplot)
+    subplot[, mar] &lt;- factor(subplot[, mar, drop=T])
+    levels(subplot[,mar]) &lt;- c(&quot;AA&quot;,&quot;AB&quot;,&quot;BB&quot;)
+    p &lt;- ggplot(subplot, aes(Age, Dist, color=get(mar), group=get(mar))) + 
+      geom_point() + 
+      labs(color = &quot;Genotype&quot;) +
+      scale_color_brewer(palette = &quot;Set1&quot;) + 
+      stat_smooth(method=&quot;lm&quot;, show.legend = FALSE, formula = y~x) + 
+      labs(title=paste0(&quot;effect for marker &quot;, mar))
+    print(p)
+  }
+  dev.off()
+}
+
+plot_int_graph &lt;- function(cross, name,  basem){
+  # Plot the Dist vs age, separate by genotype for each marker
+  allphen &lt;- cross$pheno
+  allgeno &lt;- as.data.frame(pull.geno(cross))
+  rownames(allgeno) &lt;- cross$pheno$AnimalName
+  allphen &lt;- merge(allphen, allgeno, by.x=&quot;AnimalName&quot;, by.y=&quot;row.names&quot;, all.x=TRUE)
+  #pdf(paste0(&quot;output/&quot;, name, &quot;.pdf&quot;))
+  for (mar in colnames(allgeno)){
+    print(mar)
+    subplot &lt;- allphen[!is.na(allphen[,mar, drop=FALSE]),] %&gt;% 
+      pivot_longer(cols = starts_with(&quot;TestAge_&quot;), names_to=&quot;test.no&quot;, values_to = &quot;Age&quot;) %&gt;% 
+      separate(test.no, c(&quot;empty1&quot;, &quot;test1&quot;)) %&gt;%
+      pivot_longer(cols = starts_with(&quot;TotalDist_&quot;), names_to=&quot;test.no.2&quot;, values_to = &quot;Dist&quot;) %&gt;%
+      separate(test.no.2, c(&quot;empty2&quot;, &quot;test2&quot;)) %&gt;% filter(test1==test2)
+    subplot &lt;- as.data.frame(subplot)
+    subplot$interactions &lt;- factor(subplot[, basem] + subplot[, mar]*3)
+    # 1:1 -&gt; 4 1:2 -&gt; 7 1:3 -&gt; 10
+    # 2:1 -&gt; 5 2:2 -&gt; 8 2:3 -&gt; 11
+    # 3:1 -&gt; 6 3:2 -&gt; 9 3:3 -&gt; 12
+    itypes  &lt;- c(1,2,3,&quot;AA:AA&quot;, &quot;AB:AA&quot;, &quot;BB:AA&quot;, 
+                &quot;AA:AB&quot;, &quot;AB:AB&quot;, &quot;BB:AB&quot;,
+                &quot;AA:BB&quot;, &quot;AB:BB&quot;, &quot;BB:BB&quot;)
+    levels(subplot$interactions) &lt;- itypes[as.integer(levels(subplot$interactions))]
+    
+    #replaces 1 2 and 3 as AA, AB and BB
+    subplot[, basem][subplot[, basem] == 1] &lt;- &quot;AA&quot;
+    subplot[, basem][subplot[, basem] == 2] &lt;- &quot;AB&quot;
+    subplot[, basem][subplot[, basem] == 3] &lt;- &quot;BB&quot;
+    subplot[, mar][subplot[, mar] == 1] &lt;- &quot;AA&quot;
+    subplot[, mar][subplot[, mar] == 2] &lt;- &quot;AB&quot;
+    subplot[, mar][subplot[, mar] == 3] &lt;- &quot;BB&quot;
+    
+    p1 &lt;- ggplot(subplot, aes(Age, Dist, color=interactions, group=interactions)) + 
+      geom_point(shape = 20) + 
+      #scale_color_discrete(&quot;Genotype&quot;) +
+      labs(color = &quot;Genotype&quot;) +
+      ylab(&quot;TotalDist&quot;) +
+      xlab(&quot;TestAge&quot;) +
+      #scale_color_brewer(palette = &quot;Set1&quot;) + 
+      scale_color_manual(breaks = c(&quot;AA:AA&quot;, &quot;AB:AA&quot;, &quot;BB:AA&quot;, &quot;AA:AB&quot;,
+                                    &quot;AB:AB&quot;, &quot;BB:AB&quot;, &quot;AA:BB&quot;, &quot;AB:BB&quot;, &quot;BB:BB&quot;),
+                                         #values = RColorBrewer::brewer.pal(9, &quot;Set1&quot;)[9:1]) +
+                       values = c(&quot;#999999&quot;, &quot;#F781BF&quot;, &quot;#A65628&quot;,&quot;#9a9a00&quot;, &quot;#FF7F00&quot;, &quot;#984EA3&quot;, &quot;#4DAF4A&quot;, &quot;#377EB8&quot;, &quot;#E41A1C&quot;)) +
+      stat_smooth(method=&quot;lm&quot;, show.legend = FALSE, formula = y~x) + 
+      labs(title=paste0(&quot;effect for markers &quot;, basem, &quot; x &quot;, mar)) +
+      theme_bw()
+    print(p1)
+    
+    p2 &lt;- ggplot(subplot, aes(Age, Dist, color=interactions, group=interactions)) +
+      geom_point(shape = 20) +
+      geom_line(aes(group = AnimalName, color = interactions), show.legend = FALSE, alpha = 0.2) +  
+      geom_smooth(method=&#39;lm&#39;, formula= y~x, show.legend = FALSE) +
+      #scale_color_discrete(&quot;Genotype&quot;) +
+      labs(color = &quot;Genotype&quot;) +
+      ylab(&quot;TotalDist&quot;) +
+      xlab(&quot;TestAge&quot;) +
+      #scale_color_brewer(palette = &quot;Set1&quot;) + 
+      scale_color_manual(breaks = c(&quot;AA:AA&quot;, &quot;AB:AA&quot;, &quot;BB:AA&quot;, &quot;AA:AB&quot;,
+                                    &quot;AB:AB&quot;, &quot;BB:AB&quot;, &quot;AA:BB&quot;, &quot;AB:BB&quot;, &quot;BB:BB&quot;),
+                                         #values = RColorBrewer::brewer.pal(9, &quot;Set1&quot;)[9:1]) +
+                       values = c(&quot;#999999&quot;, &quot;#F781BF&quot;, &quot;#A65628&quot;,&quot;#9a9a00&quot;, &quot;#FF7F00&quot;, &quot;#984EA3&quot;, &quot;#4DAF4A&quot;, &quot;#377EB8&quot;, &quot;#E41A1C&quot;)) +
+      stat_smooth(method=&quot;lm&quot;, show.legend = FALSE, formula = y~x) + 
+      labs(title=paste0(&quot;Effect for markers &quot;, basem, &quot; x &quot;, mar)) +
+      facet_grid(subplot[, basem] ~ subplot[, mar]) +
+      theme_bw() +
+      theme(plot.title = element_text(size=6))
+    print(p2)
+  }
+  #dev.off()
+}
+plot_graph(WT144, &quot;WT144_effect_for_marker_plots&quot;)</code></pre>
+<pre><code>png 
+  2 </code></pre>
+<pre class="r"><code>plot_int_graph(WT144, paste0(&quot;WT144_effect_for_marker_&quot;, &quot;_int_chr5-136332619-.-C-A&quot;), &quot;chr5-136332619-.-C-A&quot;)</code></pre>
+<pre><code>[1] &quot;chr1-65643621-.-C-A&quot;</code></pre>
+<p><img src="figure/QTL_analysis_for_Crichton_final.Rmd/Plot%20the%20Dist_vs_age%20separate%20by%20genotype%20for%20each%20marker-1.png" width="960" style="display: block; margin: auto;" /><img src="figure/QTL_analysis_for_Crichton_final.Rmd/Plot%20the%20Dist_vs_age%20separate%20by%20genotype%20for%20each%20marker-2.png" width="960" style="display: block; margin: auto;" /></p>
+<pre><code>[1] &quot;chr1-74679418-.-A-G&quot;</code></pre>
+<p><img src="figure/QTL_analysis_for_Crichton_final.Rmd/Plot%20the%20Dist_vs_age%20separate%20by%20genotype%20for%20each%20marker-3.png" width="960" style="display: block; margin: auto;" /><img src="figure/QTL_analysis_for_Crichton_final.Rmd/Plot%20the%20Dist_vs_age%20separate%20by%20genotype%20for%20each%20marker-4.png" width="960" style="display: block; margin: auto;" /></p>
+<pre><code>[1] &quot;chr1-79823528-.-A-G&quot;</code></pre>
+<p><img src="figure/QTL_analysis_for_Crichton_final.Rmd/Plot%20the%20Dist_vs_age%20separate%20by%20genotype%20for%20each%20marker-5.png" width="960" style="display: block; margin: auto;" /><img src="figure/QTL_analysis_for_Crichton_final.Rmd/Plot%20the%20Dist_vs_age%20separate%20by%20genotype%20for%20each%20marker-6.png" width="960" style="display: block; margin: auto;" /></p>
+<pre><code>[1] &quot;chr1-86851039-.-A-G&quot;</code></pre>
+<p><img src="figure/QTL_analysis_for_Crichton_final.Rmd/Plot%20the%20Dist_vs_age%20separate%20by%20genotype%20for%20each%20marker-7.png" width="960" style="display: block; margin: auto;" /><img src="figure/QTL_analysis_for_Crichton_final.Rmd/Plot%20the%20Dist_vs_age%20separate%20by%20genotype%20for%20each%20marker-8.png" width="960" style="display: block; margin: auto;" /></p>
+<pre><code>[1] &quot;chr1-188155143-.-G-A&quot;</code></pre>
+<p><img src="figure/QTL_analysis_for_Crichton_final.Rmd/Plot%20the%20Dist_vs_age%20separate%20by%20genotype%20for%20each%20marker-9.png" width="960" style="display: block; margin: auto;" /><img src="figure/QTL_analysis_for_Crichton_final.Rmd/Plot%20the%20Dist_vs_age%20separate%20by%20genotype%20for%20each%20marker-10.png" width="960" style="display: block; margin: auto;" /></p>
+<pre><code>[1] &quot;chr2-7018694-.-G-T&quot;</code></pre>
+<p><img src="figure/QTL_analysis_for_Crichton_final.Rmd/Plot%20the%20Dist_vs_age%20separate%20by%20genotype%20for%20each%20marker-11.png" width="960" style="display: block; margin: auto;" /><img src="figure/QTL_analysis_for_Crichton_final.Rmd/Plot%20the%20Dist_vs_age%20separate%20by%20genotype%20for%20each%20marker-12.png" width="960" style="display: block; margin: auto;" /></p>
+<pre><code>[1] &quot;chr2-79706301-.-T-A&quot;</code></pre>
+<p><img src="figure/QTL_analysis_for_Crichton_final.Rmd/Plot%20the%20Dist_vs_age%20separate%20by%20genotype%20for%20each%20marker-13.png" width="960" style="display: block; margin: auto;" /><img src="figure/QTL_analysis_for_Crichton_final.Rmd/Plot%20the%20Dist_vs_age%20separate%20by%20genotype%20for%20each%20marker-14.png" width="960" style="display: block; margin: auto;" /></p>
+<pre><code>[1] &quot;chr2-92367783-.-T-C&quot;</code></pre>
+<p><img src="figure/QTL_analysis_for_Crichton_final.Rmd/Plot%20the%20Dist_vs_age%20separate%20by%20genotype%20for%20each%20marker-15.png" width="960" style="display: block; margin: auto;" /><img src="figure/QTL_analysis_for_Crichton_final.Rmd/Plot%20the%20Dist_vs_age%20separate%20by%20genotype%20for%20each%20marker-16.png" width="960" style="display: block; margin: auto;" /></p>
+<pre><code>[1] &quot;chr2-95118744-.-T-A&quot;</code></pre>
+<p><img src="figure/QTL_analysis_for_Crichton_final.Rmd/Plot%20the%20Dist_vs_age%20separate%20by%20genotype%20for%20each%20marker-17.png" width="960" style="display: block; margin: auto;" /><img src="figure/QTL_analysis_for_Crichton_final.Rmd/Plot%20the%20Dist_vs_age%20separate%20by%20genotype%20for%20each%20marker-18.png" width="960" style="display: block; margin: auto;" /></p>
+<pre><code>[1] &quot;chr2-102169266-.-C-T&quot;</code></pre>
+<p><img src="figure/QTL_analysis_for_Crichton_final.Rmd/Plot%20the%20Dist_vs_age%20separate%20by%20genotype%20for%20each%20marker-19.png" width="960" style="display: block; margin: auto;" /><img src="figure/QTL_analysis_for_Crichton_final.Rmd/Plot%20the%20Dist_vs_age%20separate%20by%20genotype%20for%20each%20marker-20.png" width="960" style="display: block; margin: auto;" /></p>
+<pre><code>[1] &quot;chr2-130405980-.-A-T&quot;</code></pre>
+<p><img src="figure/QTL_analysis_for_Crichton_final.Rmd/Plot%20the%20Dist_vs_age%20separate%20by%20genotype%20for%20each%20marker-21.png" width="960" style="display: block; margin: auto;" /><img src="figure/QTL_analysis_for_Crichton_final.Rmd/Plot%20the%20Dist_vs_age%20separate%20by%20genotype%20for%20each%20marker-22.png" width="960" style="display: block; margin: auto;" /></p>
+<pre><code>[1] &quot;chr2-137498061-.-T-A&quot;</code></pre>
+<p><img src="figure/QTL_analysis_for_Crichton_final.Rmd/Plot%20the%20Dist_vs_age%20separate%20by%20genotype%20for%20each%20marker-23.png" width="960" style="display: block; margin: auto;" /><img src="figure/QTL_analysis_for_Crichton_final.Rmd/Plot%20the%20Dist_vs_age%20separate%20by%20genotype%20for%20each%20marker-24.png" width="960" style="display: block; margin: auto;" /></p>
+<pre><code>[1] &quot;chr2-145128463-.-A-T&quot;</code></pre>
+<p><img src="figure/QTL_analysis_for_Crichton_final.Rmd/Plot%20the%20Dist_vs_age%20separate%20by%20genotype%20for%20each%20marker-25.png" width="960" style="display: block; margin: auto;" /><img src="figure/QTL_analysis_for_Crichton_final.Rmd/Plot%20the%20Dist_vs_age%20separate%20by%20genotype%20for%20each%20marker-26.png" width="960" style="display: block; margin: auto;" /></p>
+<pre><code>[1] &quot;chr3-59218564-.-T-A&quot;</code></pre>
+<p><img src="figure/QTL_analysis_for_Crichton_final.Rmd/Plot%20the%20Dist_vs_age%20separate%20by%20genotype%20for%20each%20marker-27.png" width="960" style="display: block; margin: auto;" /><img src="figure/QTL_analysis_for_Crichton_final.Rmd/Plot%20the%20Dist_vs_age%20separate%20by%20genotype%20for%20each%20marker-28.png" width="960" style="display: block; margin: auto;" /></p>
+<pre><code>[1] &quot;chr3-98881230-.-G-A&quot;</code></pre>
+<p><img src="figure/QTL_analysis_for_Crichton_final.Rmd/Plot%20the%20Dist_vs_age%20separate%20by%20genotype%20for%20each%20marker-29.png" width="960" style="display: block; margin: auto;" /><img src="figure/QTL_analysis_for_Crichton_final.Rmd/Plot%20the%20Dist_vs_age%20separate%20by%20genotype%20for%20each%20marker-30.png" width="960" style="display: block; margin: auto;" /></p>
+<pre><code>[1] &quot;chr3-106985708-.-A-C&quot;</code></pre>
+<p><img src="figure/QTL_analysis_for_Crichton_final.Rmd/Plot%20the%20Dist_vs_age%20separate%20by%20genotype%20for%20each%20marker-31.png" width="960" style="display: block; margin: auto;" /><img src="figure/QTL_analysis_for_Crichton_final.Rmd/Plot%20the%20Dist_vs_age%20separate%20by%20genotype%20for%20each%20marker-32.png" width="960" style="display: block; margin: auto;" /></p>
+<pre><code>[1] &quot;chr3-135614002-.-T-G&quot;</code></pre>
+<p><img src="figure/QTL_analysis_for_Crichton_final.Rmd/Plot%20the%20Dist_vs_age%20separate%20by%20genotype%20for%20each%20marker-33.png" width="960" style="display: block; margin: auto;" /><img src="figure/QTL_analysis_for_Crichton_final.Rmd/Plot%20the%20Dist_vs_age%20separate%20by%20genotype%20for%20each%20marker-34.png" width="960" style="display: block; margin: auto;" /></p>
+<pre><code>[1] &quot;chr3-145286160-.-C-A&quot;</code></pre>
+<p><img src="figure/QTL_analysis_for_Crichton_final.Rmd/Plot%20the%20Dist_vs_age%20separate%20by%20genotype%20for%20each%20marker-35.png" width="960" style="display: block; margin: auto;" /><img src="figure/QTL_analysis_for_Crichton_final.Rmd/Plot%20the%20Dist_vs_age%20separate%20by%20genotype%20for%20each%20marker-36.png" width="960" style="display: block; margin: auto;" /></p>
+<pre><code>[1] &quot;chr3-146750531-.-A-G&quot;</code></pre>
+<p><img src="figure/QTL_analysis_for_Crichton_final.Rmd/Plot%20the%20Dist_vs_age%20separate%20by%20genotype%20for%20each%20marker-37.png" width="960" style="display: block; margin: auto;" /><img src="figure/QTL_analysis_for_Crichton_final.Rmd/Plot%20the%20Dist_vs_age%20separate%20by%20genotype%20for%20each%20marker-38.png" width="960" style="display: block; margin: auto;" /></p>
+<pre><code>[1] &quot;chr3-152699551-.-G-A&quot;</code></pre>
+<p><img src="figure/QTL_analysis_for_Crichton_final.Rmd/Plot%20the%20Dist_vs_age%20separate%20by%20genotype%20for%20each%20marker-39.png" width="960" style="display: block; margin: auto;" /><img src="figure/QTL_analysis_for_Crichton_final.Rmd/Plot%20the%20Dist_vs_age%20separate%20by%20genotype%20for%20each%20marker-40.png" width="960" style="display: block; margin: auto;" /></p>
+<pre><code>[1] &quot;chr4-32821418-.-C-T&quot;</code></pre>
+<p><img src="figure/QTL_analysis_for_Crichton_final.Rmd/Plot%20the%20Dist_vs_age%20separate%20by%20genotype%20for%20each%20marker-41.png" width="960" style="display: block; margin: auto;" /><img src="figure/QTL_analysis_for_Crichton_final.Rmd/Plot%20the%20Dist_vs_age%20separate%20by%20genotype%20for%20each%20marker-42.png" width="960" style="display: block; margin: auto;" /></p>
+<pre><code>[1] &quot;chr5-75264187-.-T-C&quot;</code></pre>
+<p><img src="figure/QTL_analysis_for_Crichton_final.Rmd/Plot%20the%20Dist_vs_age%20separate%20by%20genotype%20for%20each%20marker-43.png" width="960" style="display: block; margin: auto;" /><img src="figure/QTL_analysis_for_Crichton_final.Rmd/Plot%20the%20Dist_vs_age%20separate%20by%20genotype%20for%20each%20marker-44.png" width="960" style="display: block; margin: auto;" /></p>
+<pre><code>[1] &quot;chr5-90233933-.-A-T&quot;</code></pre>
+<p><img src="figure/QTL_analysis_for_Crichton_final.Rmd/Plot%20the%20Dist_vs_age%20separate%20by%20genotype%20for%20each%20marker-45.png" width="960" style="display: block; margin: auto;" /><img src="figure/QTL_analysis_for_Crichton_final.Rmd/Plot%20the%20Dist_vs_age%20separate%20by%20genotype%20for%20each%20marker-46.png" width="960" style="display: block; margin: auto;" /></p>
+<pre><code>[1] &quot;chr5-97607237-.-T-A&quot;</code></pre>
+<p><img src="figure/QTL_analysis_for_Crichton_final.Rmd/Plot%20the%20Dist_vs_age%20separate%20by%20genotype%20for%20each%20marker-47.png" width="960" style="display: block; margin: auto;" /><img src="figure/QTL_analysis_for_Crichton_final.Rmd/Plot%20the%20Dist_vs_age%20separate%20by%20genotype%20for%20each%20marker-48.png" width="960" style="display: block; margin: auto;" /></p>
+<pre><code>[1] &quot;chr5-107507008-.-C-T&quot;</code></pre>
+<p><img src="figure/QTL_analysis_for_Crichton_final.Rmd/Plot%20the%20Dist_vs_age%20separate%20by%20genotype%20for%20each%20marker-49.png" width="960" style="display: block; margin: auto;" /><img src="figure/QTL_analysis_for_Crichton_final.Rmd/Plot%20the%20Dist_vs_age%20separate%20by%20genotype%20for%20each%20marker-50.png" width="960" style="display: block; margin: auto;" /></p>
+<pre><code>[1] &quot;chr5-112799362-.-C-T&quot;</code></pre>
+<p><img src="figure/QTL_analysis_for_Crichton_final.Rmd/Plot%20the%20Dist_vs_age%20separate%20by%20genotype%20for%20each%20marker-51.png" width="960" style="display: block; margin: auto;" /><img src="figure/QTL_analysis_for_Crichton_final.Rmd/Plot%20the%20Dist_vs_age%20separate%20by%20genotype%20for%20each%20marker-52.png" width="960" style="display: block; margin: auto;" /></p>
+<pre><code>[1] &quot;chr5-120660771-.-T-A&quot;</code></pre>
+<p><img src="figure/QTL_analysis_for_Crichton_final.Rmd/Plot%20the%20Dist_vs_age%20separate%20by%20genotype%20for%20each%20marker-53.png" width="960" style="display: block; margin: auto;" /><img src="figure/QTL_analysis_for_Crichton_final.Rmd/Plot%20the%20Dist_vs_age%20separate%20by%20genotype%20for%20each%20marker-54.png" width="960" style="display: block; margin: auto;" /></p>
+<pre><code>[1] &quot;chr5-122167749-.-T-C&quot;</code></pre>
+<p><img src="figure/QTL_analysis_for_Crichton_final.Rmd/Plot%20the%20Dist_vs_age%20separate%20by%20genotype%20for%20each%20marker-55.png" width="960" style="display: block; margin: auto;" /><img src="figure/QTL_analysis_for_Crichton_final.Rmd/Plot%20the%20Dist_vs_age%20separate%20by%20genotype%20for%20each%20marker-56.png" width="960" style="display: block; margin: auto;" /></p>
+<pre><code>[1] &quot;chr5-125153901-.-C-T&quot;</code></pre>
+<p><img src="figure/QTL_analysis_for_Crichton_final.Rmd/Plot%20the%20Dist_vs_age%20separate%20by%20genotype%20for%20each%20marker-57.png" width="960" style="display: block; margin: auto;" /><img src="figure/QTL_analysis_for_Crichton_final.Rmd/Plot%20the%20Dist_vs_age%20separate%20by%20genotype%20for%20each%20marker-58.png" width="960" style="display: block; margin: auto;" /></p>
+<pre><code>[1] &quot;chr5-126058493-.-T-A&quot;</code></pre>
+<p><img src="figure/QTL_analysis_for_Crichton_final.Rmd/Plot%20the%20Dist_vs_age%20separate%20by%20genotype%20for%20each%20marker-59.png" width="960" style="display: block; margin: auto;" /><img src="figure/QTL_analysis_for_Crichton_final.Rmd/Plot%20the%20Dist_vs_age%20separate%20by%20genotype%20for%20each%20marker-60.png" width="960" style="display: block; margin: auto;" /></p>
+<pre><code>[1] &quot;chr5-126551890-.-T-A&quot;</code></pre>
+<p><img src="figure/QTL_analysis_for_Crichton_final.Rmd/Plot%20the%20Dist_vs_age%20separate%20by%20genotype%20for%20each%20marker-61.png" width="960" style="display: block; margin: auto;" /><img src="figure/QTL_analysis_for_Crichton_final.Rmd/Plot%20the%20Dist_vs_age%20separate%20by%20genotype%20for%20each%20marker-62.png" width="960" style="display: block; margin: auto;" /></p>
+<pre><code>[1] &quot;chr5-127565504-.-T-A&quot;</code></pre>
+<p><img src="figure/QTL_analysis_for_Crichton_final.Rmd/Plot%20the%20Dist_vs_age%20separate%20by%20genotype%20for%20each%20marker-63.png" width="960" style="display: block; margin: auto;" /><img src="figure/QTL_analysis_for_Crichton_final.Rmd/Plot%20the%20Dist_vs_age%20separate%20by%20genotype%20for%20each%20marker-64.png" width="960" style="display: block; margin: auto;" /></p>
+<pre><code>[1] &quot;chr5-130394596-.-T-C&quot;</code></pre>
+<p><img src="figure/QTL_analysis_for_Crichton_final.Rmd/Plot%20the%20Dist_vs_age%20separate%20by%20genotype%20for%20each%20marker-65.png" width="960" style="display: block; margin: auto;" /><img src="figure/QTL_analysis_for_Crichton_final.Rmd/Plot%20the%20Dist_vs_age%20separate%20by%20genotype%20for%20each%20marker-66.png" width="960" style="display: block; margin: auto;" /></p>
+<pre><code>[1] &quot;chr5-130943677-.-T-A&quot;</code></pre>
+<p><img src="figure/QTL_analysis_for_Crichton_final.Rmd/Plot%20the%20Dist_vs_age%20separate%20by%20genotype%20for%20each%20marker-67.png" width="960" style="display: block; margin: auto;" /><img src="figure/QTL_analysis_for_Crichton_final.Rmd/Plot%20the%20Dist_vs_age%20separate%20by%20genotype%20for%20each%20marker-68.png" width="960" style="display: block; margin: auto;" /></p>
+<pre><code>[1] &quot;chr5-131298836-.-T-C&quot;</code></pre>
+<p><img src="figure/QTL_analysis_for_Crichton_final.Rmd/Plot%20the%20Dist_vs_age%20separate%20by%20genotype%20for%20each%20marker-69.png" width="960" style="display: block; margin: auto;" /><img src="figure/QTL_analysis_for_Crichton_final.Rmd/Plot%20the%20Dist_vs_age%20separate%20by%20genotype%20for%20each%20marker-70.png" width="960" style="display: block; margin: auto;" /></p>
+<pre><code>[1] &quot;chr5-133052642-.-T-G&quot;</code></pre>
+<p><img src="figure/QTL_analysis_for_Crichton_final.Rmd/Plot%20the%20Dist_vs_age%20separate%20by%20genotype%20for%20each%20marker-71.png" width="960" style="display: block; margin: auto;" /><img src="figure/QTL_analysis_for_Crichton_final.Rmd/Plot%20the%20Dist_vs_age%20separate%20by%20genotype%20for%20each%20marker-72.png" width="960" style="display: block; margin: auto;" /></p>
+<pre><code>[1] &quot;chr5-135960983-.-T-C&quot;</code></pre>
+<p><img src="figure/QTL_analysis_for_Crichton_final.Rmd/Plot%20the%20Dist_vs_age%20separate%20by%20genotype%20for%20each%20marker-73.png" width="960" style="display: block; margin: auto;" /><img src="figure/QTL_analysis_for_Crichton_final.Rmd/Plot%20the%20Dist_vs_age%20separate%20by%20genotype%20for%20each%20marker-74.png" width="960" style="display: block; margin: auto;" /></p>
+<pre><code>[1] &quot;chr5-136332619-.-C-A&quot;</code></pre>
+<p><img src="figure/QTL_analysis_for_Crichton_final.Rmd/Plot%20the%20Dist_vs_age%20separate%20by%20genotype%20for%20each%20marker-75.png" width="960" style="display: block; margin: auto;" /><img src="figure/QTL_analysis_for_Crichton_final.Rmd/Plot%20the%20Dist_vs_age%20separate%20by%20genotype%20for%20each%20marker-76.png" width="960" style="display: block; margin: auto;" /></p>
+<pre><code>[1] &quot;chr5-136844385-.-T-G&quot;</code></pre>
+<p><img src="figure/QTL_analysis_for_Crichton_final.Rmd/Plot%20the%20Dist_vs_age%20separate%20by%20genotype%20for%20each%20marker-77.png" width="960" style="display: block; margin: auto;" /><img src="figure/QTL_analysis_for_Crichton_final.Rmd/Plot%20the%20Dist_vs_age%20separate%20by%20genotype%20for%20each%20marker-78.png" width="960" style="display: block; margin: auto;" /></p>
+<pre><code>[1] &quot;chr5-138956439-.-T-C&quot;</code></pre>
+<p><img src="figure/QTL_analysis_for_Crichton_final.Rmd/Plot%20the%20Dist_vs_age%20separate%20by%20genotype%20for%20each%20marker-79.png" width="960" style="display: block; margin: auto;" /><img src="figure/QTL_analysis_for_Crichton_final.Rmd/Plot%20the%20Dist_vs_age%20separate%20by%20genotype%20for%20each%20marker-80.png" width="960" style="display: block; margin: auto;" /></p>
+<pre><code>[1] &quot;chr5-139706036-.-T-C&quot;</code></pre>
+<p><img src="figure/QTL_analysis_for_Crichton_final.Rmd/Plot%20the%20Dist_vs_age%20separate%20by%20genotype%20for%20each%20marker-81.png" width="960" style="display: block; margin: auto;" /><img src="figure/QTL_analysis_for_Crichton_final.Rmd/Plot%20the%20Dist_vs_age%20separate%20by%20genotype%20for%20each%20marker-82.png" width="960" style="display: block; margin: auto;" /></p>
+<pre><code>[1] &quot;chr5-139891407-.-T-C&quot;</code></pre>
+<p><img src="figure/QTL_analysis_for_Crichton_final.Rmd/Plot%20the%20Dist_vs_age%20separate%20by%20genotype%20for%20each%20marker-83.png" width="960" style="display: block; margin: auto;" /><img src="figure/QTL_analysis_for_Crichton_final.Rmd/Plot%20the%20Dist_vs_age%20separate%20by%20genotype%20for%20each%20marker-84.png" width="960" style="display: block; margin: auto;" /></p>
+<pre><code>[1] &quot;chr5-140071081-.-C-A&quot;</code></pre>
+<p><img src="figure/QTL_analysis_for_Crichton_final.Rmd/Plot%20the%20Dist_vs_age%20separate%20by%20genotype%20for%20each%20marker-85.png" width="960" style="display: block; margin: auto;" /><img src="figure/QTL_analysis_for_Crichton_final.Rmd/Plot%20the%20Dist_vs_age%20separate%20by%20genotype%20for%20each%20marker-86.png" width="960" style="display: block; margin: auto;" /></p>
+<pre><code>[1] &quot;chr7-35061547-.-A-G&quot;</code></pre>
+<p><img src="figure/QTL_analysis_for_Crichton_final.Rmd/Plot%20the%20Dist_vs_age%20separate%20by%20genotype%20for%20each%20marker-87.png" width="960" style="display: block; margin: auto;" /><img src="figure/QTL_analysis_for_Crichton_final.Rmd/Plot%20the%20Dist_vs_age%20separate%20by%20genotype%20for%20each%20marker-88.png" width="960" style="display: block; margin: auto;" /></p>
+<pre><code>[1] &quot;chr7-44272713-.-T-C&quot;</code></pre>
+<p><img src="figure/QTL_analysis_for_Crichton_final.Rmd/Plot%20the%20Dist_vs_age%20separate%20by%20genotype%20for%20each%20marker-89.png" width="960" style="display: block; margin: auto;" /><img src="figure/QTL_analysis_for_Crichton_final.Rmd/Plot%20the%20Dist_vs_age%20separate%20by%20genotype%20for%20each%20marker-90.png" width="960" style="display: block; margin: auto;" /></p>
+<pre><code>[1] &quot;chr7-66785411-.-A-G&quot;</code></pre>
+<p><img src="figure/QTL_analysis_for_Crichton_final.Rmd/Plot%20the%20Dist_vs_age%20separate%20by%20genotype%20for%20each%20marker-91.png" width="960" style="display: block; margin: auto;" /><img src="figure/QTL_analysis_for_Crichton_final.Rmd/Plot%20the%20Dist_vs_age%20separate%20by%20genotype%20for%20each%20marker-92.png" width="960" style="display: block; margin: auto;" /></p>
+<pre><code>[1] &quot;chr7-112510032-.-A-T&quot;</code></pre>
+<p><img src="figure/QTL_analysis_for_Crichton_final.Rmd/Plot%20the%20Dist_vs_age%20separate%20by%20genotype%20for%20each%20marker-93.png" width="960" style="display: block; margin: auto;" /><img src="figure/QTL_analysis_for_Crichton_final.Rmd/Plot%20the%20Dist_vs_age%20separate%20by%20genotype%20for%20each%20marker-94.png" width="960" style="display: block; margin: auto;" /></p>
+<pre><code>[1] &quot;chr8-91986173-.-T-C&quot;</code></pre>
+<p><img src="figure/QTL_analysis_for_Crichton_final.Rmd/Plot%20the%20Dist_vs_age%20separate%20by%20genotype%20for%20each%20marker-95.png" width="960" style="display: block; margin: auto;" /><img src="figure/QTL_analysis_for_Crichton_final.Rmd/Plot%20the%20Dist_vs_age%20separate%20by%20genotype%20for%20each%20marker-96.png" width="960" style="display: block; margin: auto;" /></p>
+<pre><code>[1] &quot;chr8-99395759-.-T-C&quot;</code></pre>
+<p><img src="figure/QTL_analysis_for_Crichton_final.Rmd/Plot%20the%20Dist_vs_age%20separate%20by%20genotype%20for%20each%20marker-97.png" width="960" style="display: block; margin: auto;" /><img src="figure/QTL_analysis_for_Crichton_final.Rmd/Plot%20the%20Dist_vs_age%20separate%20by%20genotype%20for%20each%20marker-98.png" width="960" style="display: block; margin: auto;" /></p>
+<pre><code>[1] &quot;chr8-112465004-.-G-A&quot;</code></pre>
+<p><img src="figure/QTL_analysis_for_Crichton_final.Rmd/Plot%20the%20Dist_vs_age%20separate%20by%20genotype%20for%20each%20marker-99.png" width="960" style="display: block; margin: auto;" /><img src="figure/QTL_analysis_for_Crichton_final.Rmd/Plot%20the%20Dist_vs_age%20separate%20by%20genotype%20for%20each%20marker-100.png" width="960" style="display: block; margin: auto;" /></p>
+<pre><code>[1] &quot;chr9-64698947-.-C-T&quot;</code></pre>
+<p><img src="figure/QTL_analysis_for_Crichton_final.Rmd/Plot%20the%20Dist_vs_age%20separate%20by%20genotype%20for%20each%20marker-101.png" width="960" style="display: block; margin: auto;" /><img src="figure/QTL_analysis_for_Crichton_final.Rmd/Plot%20the%20Dist_vs_age%20separate%20by%20genotype%20for%20each%20marker-102.png" width="960" style="display: block; margin: auto;" /></p>
+<pre><code>[1] &quot;chr9-65857475-.-T-C&quot;</code></pre>
+<p><img src="figure/QTL_analysis_for_Crichton_final.Rmd/Plot%20the%20Dist_vs_age%20separate%20by%20genotype%20for%20each%20marker-103.png" width="960" style="display: block; margin: auto;" /><img src="figure/QTL_analysis_for_Crichton_final.Rmd/Plot%20the%20Dist_vs_age%20separate%20by%20genotype%20for%20each%20marker-104.png" width="960" style="display: block; margin: auto;" /></p>
+<pre><code>[1] &quot;chr9-69415567-.-T-A&quot;</code></pre>
+<p><img src="figure/QTL_analysis_for_Crichton_final.Rmd/Plot%20the%20Dist_vs_age%20separate%20by%20genotype%20for%20each%20marker-105.png" width="960" style="display: block; margin: auto;" /><img src="figure/QTL_analysis_for_Crichton_final.Rmd/Plot%20the%20Dist_vs_age%20separate%20by%20genotype%20for%20each%20marker-106.png" width="960" style="display: block; margin: auto;" /></p>
+<pre><code>[1] &quot;chr9-71739608-.-T-A&quot;</code></pre>
+<p><img src="figure/QTL_analysis_for_Crichton_final.Rmd/Plot%20the%20Dist_vs_age%20separate%20by%20genotype%20for%20each%20marker-107.png" width="960" style="display: block; margin: auto;" /><img src="figure/QTL_analysis_for_Crichton_final.Rmd/Plot%20the%20Dist_vs_age%20separate%20by%20genotype%20for%20each%20marker-108.png" width="960" style="display: block; margin: auto;" /></p>
+<pre><code>[1] &quot;chr9-80465702-.-T-A&quot;</code></pre>
+<p><img src="figure/QTL_analysis_for_Crichton_final.Rmd/Plot%20the%20Dist_vs_age%20separate%20by%20genotype%20for%20each%20marker-109.png" width="960" style="display: block; margin: auto;" /><img src="figure/QTL_analysis_for_Crichton_final.Rmd/Plot%20the%20Dist_vs_age%20separate%20by%20genotype%20for%20each%20marker-110.png" width="960" style="display: block; margin: auto;" /></p>
+<pre><code>[1] &quot;chr10-24134777-.-A-T&quot;</code></pre>
+<p><img src="figure/QTL_analysis_for_Crichton_final.Rmd/Plot%20the%20Dist_vs_age%20separate%20by%20genotype%20for%20each%20marker-111.png" width="960" style="display: block; margin: auto;" /><img src="figure/QTL_analysis_for_Crichton_final.Rmd/Plot%20the%20Dist_vs_age%20separate%20by%20genotype%20for%20each%20marker-112.png" width="960" style="display: block; margin: auto;" /></p>
+<pre><code>[1] &quot;chr11-96730656-.-A-G&quot;</code></pre>
+<p><img src="figure/QTL_analysis_for_Crichton_final.Rmd/Plot%20the%20Dist_vs_age%20separate%20by%20genotype%20for%20each%20marker-113.png" width="960" style="display: block; margin: auto;" /><img src="figure/QTL_analysis_for_Crichton_final.Rmd/Plot%20the%20Dist_vs_age%20separate%20by%20genotype%20for%20each%20marker-114.png" width="960" style="display: block; margin: auto;" /></p>
+<pre><code>[1] &quot;chr12-43136399-.-A-T&quot;</code></pre>
+<p><img src="figure/QTL_analysis_for_Crichton_final.Rmd/Plot%20the%20Dist_vs_age%20separate%20by%20genotype%20for%20each%20marker-115.png" width="960" style="display: block; margin: auto;" /><img src="figure/QTL_analysis_for_Crichton_final.Rmd/Plot%20the%20Dist_vs_age%20separate%20by%20genotype%20for%20each%20marker-116.png" width="960" style="display: block; margin: auto;" /></p>
+<pre><code>[1] &quot;chr12-69197484-.-C-A&quot;</code></pre>
+<p><img src="figure/QTL_analysis_for_Crichton_final.Rmd/Plot%20the%20Dist_vs_age%20separate%20by%20genotype%20for%20each%20marker-117.png" width="960" style="display: block; margin: auto;" /><img src="figure/QTL_analysis_for_Crichton_final.Rmd/Plot%20the%20Dist_vs_age%20separate%20by%20genotype%20for%20each%20marker-118.png" width="960" style="display: block; margin: auto;" /></p>
+<pre><code>[1] &quot;chr12-86851130-.-T-A&quot;</code></pre>
+<p><img src="figure/QTL_analysis_for_Crichton_final.Rmd/Plot%20the%20Dist_vs_age%20separate%20by%20genotype%20for%20each%20marker-119.png" width="960" style="display: block; margin: auto;" /><img src="figure/QTL_analysis_for_Crichton_final.Rmd/Plot%20the%20Dist_vs_age%20separate%20by%20genotype%20for%20each%20marker-120.png" width="960" style="display: block; margin: auto;" /></p>
+<pre><code>[1] &quot;chr12-112415100-.-G-A&quot;</code></pre>
+<p><img src="figure/QTL_analysis_for_Crichton_final.Rmd/Plot%20the%20Dist_vs_age%20separate%20by%20genotype%20for%20each%20marker-121.png" width="960" style="display: block; margin: auto;" /><img src="figure/QTL_analysis_for_Crichton_final.Rmd/Plot%20the%20Dist_vs_age%20separate%20by%20genotype%20for%20each%20marker-122.png" width="960" style="display: block; margin: auto;" /></p>
+<pre><code>[1] &quot;chr13-20165684-.-T-A&quot;</code></pre>
+<p><img src="figure/QTL_analysis_for_Crichton_final.Rmd/Plot%20the%20Dist_vs_age%20separate%20by%20genotype%20for%20each%20marker-123.png" width="960" style="display: block; margin: auto;" /><img src="figure/QTL_analysis_for_Crichton_final.Rmd/Plot%20the%20Dist_vs_age%20separate%20by%20genotype%20for%20each%20marker-124.png" width="960" style="display: block; margin: auto;" /></p>
+<pre><code>[1] &quot;chr13-115031098-.-T-C&quot;</code></pre>
+<p><img src="figure/QTL_analysis_for_Crichton_final.Rmd/Plot%20the%20Dist_vs_age%20separate%20by%20genotype%20for%20each%20marker-125.png" width="960" style="display: block; margin: auto;" /><img src="figure/QTL_analysis_for_Crichton_final.Rmd/Plot%20the%20Dist_vs_age%20separate%20by%20genotype%20for%20each%20marker-126.png" width="960" style="display: block; margin: auto;" /></p>
+<pre><code>[1] &quot;chr14-11709591-.-T-C&quot;</code></pre>
+<p><img src="figure/QTL_analysis_for_Crichton_final.Rmd/Plot%20the%20Dist_vs_age%20separate%20by%20genotype%20for%20each%20marker-127.png" width="960" style="display: block; margin: auto;" /><img src="figure/QTL_analysis_for_Crichton_final.Rmd/Plot%20the%20Dist_vs_age%20separate%20by%20genotype%20for%20each%20marker-128.png" width="960" style="display: block; margin: auto;" /></p>
+<pre><code>[1] &quot;chr14-50642778-.-G-A&quot;</code></pre>
+<p><img src="figure/QTL_analysis_for_Crichton_final.Rmd/Plot%20the%20Dist_vs_age%20separate%20by%20genotype%20for%20each%20marker-129.png" width="960" style="display: block; margin: auto;" /><img src="figure/QTL_analysis_for_Crichton_final.Rmd/Plot%20the%20Dist_vs_age%20separate%20by%20genotype%20for%20each%20marker-130.png" width="960" style="display: block; margin: auto;" /></p>
+<pre><code>[1] &quot;chr14-62407765-.-T-A&quot;</code></pre>
+<p><img src="figure/QTL_analysis_for_Crichton_final.Rmd/Plot%20the%20Dist_vs_age%20separate%20by%20genotype%20for%20each%20marker-131.png" width="960" style="display: block; margin: auto;" /><img src="figure/QTL_analysis_for_Crichton_final.Rmd/Plot%20the%20Dist_vs_age%20separate%20by%20genotype%20for%20each%20marker-132.png" width="960" style="display: block; margin: auto;" /></p>
+<pre><code>[1] &quot;chr14-69691477-.-G-T&quot;</code></pre>
+<p><img src="figure/QTL_analysis_for_Crichton_final.Rmd/Plot%20the%20Dist_vs_age%20separate%20by%20genotype%20for%20each%20marker-133.png" width="960" style="display: block; margin: auto;" /><img src="figure/QTL_analysis_for_Crichton_final.Rmd/Plot%20the%20Dist_vs_age%20separate%20by%20genotype%20for%20each%20marker-134.png" width="960" style="display: block; margin: auto;" /></p>
+<pre><code>[1] &quot;chr15-58605950-.-C-G&quot;</code></pre>
+<p><img src="figure/QTL_analysis_for_Crichton_final.Rmd/Plot%20the%20Dist_vs_age%20separate%20by%20genotype%20for%20each%20marker-135.png" width="960" style="display: block; margin: auto;" /><img src="figure/QTL_analysis_for_Crichton_final.Rmd/Plot%20the%20Dist_vs_age%20separate%20by%20genotype%20for%20each%20marker-136.png" width="960" style="display: block; margin: auto;" /></p>
+<pre><code>[1] &quot;chr15-74727869-.-C-T&quot;</code></pre>
+<p><img src="figure/QTL_analysis_for_Crichton_final.Rmd/Plot%20the%20Dist_vs_age%20separate%20by%20genotype%20for%20each%20marker-137.png" width="960" style="display: block; margin: auto;" /><img src="figure/QTL_analysis_for_Crichton_final.Rmd/Plot%20the%20Dist_vs_age%20separate%20by%20genotype%20for%20each%20marker-138.png" width="960" style="display: block; margin: auto;" /></p>
+<pre><code>[1] &quot;chr16-32593683-.-A-G&quot;</code></pre>
+<p><img src="figure/QTL_analysis_for_Crichton_final.Rmd/Plot%20the%20Dist_vs_age%20separate%20by%20genotype%20for%20each%20marker-139.png" width="960" style="display: block; margin: auto;" /><img src="figure/QTL_analysis_for_Crichton_final.Rmd/Plot%20the%20Dist_vs_age%20separate%20by%20genotype%20for%20each%20marker-140.png" width="960" style="display: block; margin: auto;" /></p>
+<pre><code>[1] &quot;chr16-75648687-.-G-A&quot;</code></pre>
+<p><img src="figure/QTL_analysis_for_Crichton_final.Rmd/Plot%20the%20Dist_vs_age%20separate%20by%20genotype%20for%20each%20marker-141.png" width="960" style="display: block; margin: auto;" /><img src="figure/QTL_analysis_for_Crichton_final.Rmd/Plot%20the%20Dist_vs_age%20separate%20by%20genotype%20for%20each%20marker-142.png" width="960" style="display: block; margin: auto;" /></p>
+<pre><code>[1] &quot;chr17-61305603-.-G-A&quot;</code></pre>
+<p><img src="figure/QTL_analysis_for_Crichton_final.Rmd/Plot%20the%20Dist_vs_age%20separate%20by%20genotype%20for%20each%20marker-143.png" width="960" style="display: block; margin: auto;" /><img src="figure/QTL_analysis_for_Crichton_final.Rmd/Plot%20the%20Dist_vs_age%20separate%20by%20genotype%20for%20each%20marker-144.png" width="960" style="display: block; margin: auto;" /></p>
+<pre><code>[1] &quot;chr17-69219676-.-G-A&quot;</code></pre>
+<p><img src="figure/QTL_analysis_for_Crichton_final.Rmd/Plot%20the%20Dist_vs_age%20separate%20by%20genotype%20for%20each%20marker-145.png" width="960" style="display: block; margin: auto;" /><img src="figure/QTL_analysis_for_Crichton_final.Rmd/Plot%20the%20Dist_vs_age%20separate%20by%20genotype%20for%20each%20marker-146.png" width="960" style="display: block; margin: auto;" /></p>
+<pre><code>[1] &quot;chr18-51300216-.-T-A&quot;</code></pre>
+<p><img src="figure/QTL_analysis_for_Crichton_final.Rmd/Plot%20the%20Dist_vs_age%20separate%20by%20genotype%20for%20each%20marker-147.png" width="960" style="display: block; margin: auto;" /><img src="figure/QTL_analysis_for_Crichton_final.Rmd/Plot%20the%20Dist_vs_age%20separate%20by%20genotype%20for%20each%20marker-148.png" width="960" style="display: block; margin: auto;" /></p>
+<pre><code>[1] &quot;chr18-89347666-.-A-G&quot;</code></pre>
+<p><img src="figure/QTL_analysis_for_Crichton_final.Rmd/Plot%20the%20Dist_vs_age%20separate%20by%20genotype%20for%20each%20marker-149.png" width="960" style="display: block; margin: auto;" /><img src="figure/QTL_analysis_for_Crichton_final.Rmd/Plot%20the%20Dist_vs_age%20separate%20by%20genotype%20for%20each%20marker-150.png" width="960" style="display: block; margin: auto;" /></p>
+<pre><code>[1] &quot;chr19-29815794-.-A-T&quot;</code></pre>
+<p><img src="figure/QTL_analysis_for_Crichton_final.Rmd/Plot%20the%20Dist_vs_age%20separate%20by%20genotype%20for%20each%20marker-151.png" width="960" style="display: block; margin: auto;" /><img src="figure/QTL_analysis_for_Crichton_final.Rmd/Plot%20the%20Dist_vs_age%20separate%20by%20genotype%20for%20each%20marker-152.png" width="960" style="display: block; margin: auto;" /></p>
+<pre><code>[1] &quot;chr19-45958839-.-A-T&quot;</code></pre>
+<p><img src="figure/QTL_analysis_for_Crichton_final.Rmd/Plot%20the%20Dist_vs_age%20separate%20by%20genotype%20for%20each%20marker-153.png" width="960" style="display: block; margin: auto;" /><img src="figure/QTL_analysis_for_Crichton_final.Rmd/Plot%20the%20Dist_vs_age%20separate%20by%20genotype%20for%20each%20marker-154.png" width="960" style="display: block; margin: auto;" /></p>
+<pre><code>[1] &quot;chr19-53469239-.-A-G&quot;</code></pre>
+<p><img src="figure/QTL_analysis_for_Crichton_final.Rmd/Plot%20the%20Dist_vs_age%20separate%20by%20genotype%20for%20each%20marker-155.png" width="960" style="display: block; margin: auto;" /><img src="figure/QTL_analysis_for_Crichton_final.Rmd/Plot%20the%20Dist_vs_age%20separate%20by%20genotype%20for%20each%20marker-156.png" width="960" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>pdf(paste0(&quot;output/&quot;, paste0(&quot;WT144_effect_for_marker_&quot;, &quot;_int_chr5-136332619-.-C-A&quot;), &quot;.pdf&quot;))
+plot_int_graph(WT144, paste0(&quot;WT144_effect_for_marker_&quot;, &quot;_int_chr5-136332619-.-C-A&quot;), &quot;chr5-136332619-.-C-A&quot;)</code></pre>
+<pre><code>[1] &quot;chr1-65643621-.-C-A&quot;</code></pre>
+<pre><code>[1] &quot;chr1-74679418-.-A-G&quot;</code></pre>
+<pre><code>[1] &quot;chr1-79823528-.-A-G&quot;</code></pre>
+<pre><code>[1] &quot;chr1-86851039-.-A-G&quot;</code></pre>
+<pre><code>[1] &quot;chr1-188155143-.-G-A&quot;</code></pre>
+<pre><code>[1] &quot;chr2-7018694-.-G-T&quot;</code></pre>
+<pre><code>[1] &quot;chr2-79706301-.-T-A&quot;</code></pre>
+<pre><code>[1] &quot;chr2-92367783-.-T-C&quot;</code></pre>
+<pre><code>[1] &quot;chr2-95118744-.-T-A&quot;</code></pre>
+<pre><code>[1] &quot;chr2-102169266-.-C-T&quot;</code></pre>
+<pre><code>[1] &quot;chr2-130405980-.-A-T&quot;</code></pre>
+<pre><code>[1] &quot;chr2-137498061-.-T-A&quot;</code></pre>
+<pre><code>[1] &quot;chr2-145128463-.-A-T&quot;</code></pre>
+<pre><code>[1] &quot;chr3-59218564-.-T-A&quot;</code></pre>
+<pre><code>[1] &quot;chr3-98881230-.-G-A&quot;</code></pre>
+<pre><code>[1] &quot;chr3-106985708-.-A-C&quot;</code></pre>
+<pre><code>[1] &quot;chr3-135614002-.-T-G&quot;</code></pre>
+<pre><code>[1] &quot;chr3-145286160-.-C-A&quot;</code></pre>
+<pre><code>[1] &quot;chr3-146750531-.-A-G&quot;</code></pre>
+<pre><code>[1] &quot;chr3-152699551-.-G-A&quot;</code></pre>
+<pre><code>[1] &quot;chr4-32821418-.-C-T&quot;</code></pre>
+<pre><code>[1] &quot;chr5-75264187-.-T-C&quot;</code></pre>
+<pre><code>[1] &quot;chr5-90233933-.-A-T&quot;</code></pre>
+<pre><code>[1] &quot;chr5-97607237-.-T-A&quot;</code></pre>
+<pre><code>[1] &quot;chr5-107507008-.-C-T&quot;</code></pre>
+<pre><code>[1] &quot;chr5-112799362-.-C-T&quot;</code></pre>
+<pre><code>[1] &quot;chr5-120660771-.-T-A&quot;</code></pre>
+<pre><code>[1] &quot;chr5-122167749-.-T-C&quot;</code></pre>
+<pre><code>[1] &quot;chr5-125153901-.-C-T&quot;</code></pre>
+<pre><code>[1] &quot;chr5-126058493-.-T-A&quot;</code></pre>
+<pre><code>[1] &quot;chr5-126551890-.-T-A&quot;</code></pre>
+<pre><code>[1] &quot;chr5-127565504-.-T-A&quot;</code></pre>
+<pre><code>[1] &quot;chr5-130394596-.-T-C&quot;</code></pre>
+<pre><code>[1] &quot;chr5-130943677-.-T-A&quot;</code></pre>
+<pre><code>[1] &quot;chr5-131298836-.-T-C&quot;</code></pre>
+<pre><code>[1] &quot;chr5-133052642-.-T-G&quot;</code></pre>
+<pre><code>[1] &quot;chr5-135960983-.-T-C&quot;</code></pre>
+<pre><code>[1] &quot;chr5-136332619-.-C-A&quot;</code></pre>
+<pre><code>[1] &quot;chr5-136844385-.-T-G&quot;</code></pre>
+<pre><code>[1] &quot;chr5-138956439-.-T-C&quot;</code></pre>
+<pre><code>[1] &quot;chr5-139706036-.-T-C&quot;</code></pre>
+<pre><code>[1] &quot;chr5-139891407-.-T-C&quot;</code></pre>
+<pre><code>[1] &quot;chr5-140071081-.-C-A&quot;</code></pre>
+<pre><code>[1] &quot;chr7-35061547-.-A-G&quot;</code></pre>
+<pre><code>[1] &quot;chr7-44272713-.-T-C&quot;</code></pre>
+<pre><code>[1] &quot;chr7-66785411-.-A-G&quot;</code></pre>
+<pre><code>[1] &quot;chr7-112510032-.-A-T&quot;</code></pre>
+<pre><code>[1] &quot;chr8-91986173-.-T-C&quot;</code></pre>
+<pre><code>[1] &quot;chr8-99395759-.-T-C&quot;</code></pre>
+<pre><code>[1] &quot;chr8-112465004-.-G-A&quot;</code></pre>
+<pre><code>[1] &quot;chr9-64698947-.-C-T&quot;</code></pre>
+<pre><code>[1] &quot;chr9-65857475-.-T-C&quot;</code></pre>
+<pre><code>[1] &quot;chr9-69415567-.-T-A&quot;</code></pre>
+<pre><code>[1] &quot;chr9-71739608-.-T-A&quot;</code></pre>
+<pre><code>[1] &quot;chr9-80465702-.-T-A&quot;</code></pre>
+<pre><code>[1] &quot;chr10-24134777-.-A-T&quot;</code></pre>
+<pre><code>[1] &quot;chr11-96730656-.-A-G&quot;</code></pre>
+<pre><code>[1] &quot;chr12-43136399-.-A-T&quot;</code></pre>
+<pre><code>[1] &quot;chr12-69197484-.-C-A&quot;</code></pre>
+<pre><code>[1] &quot;chr12-86851130-.-T-A&quot;</code></pre>
+<pre><code>[1] &quot;chr12-112415100-.-G-A&quot;</code></pre>
+<pre><code>[1] &quot;chr13-20165684-.-T-A&quot;</code></pre>
+<pre><code>[1] &quot;chr13-115031098-.-T-C&quot;</code></pre>
+<pre><code>[1] &quot;chr14-11709591-.-T-C&quot;</code></pre>
+<pre><code>[1] &quot;chr14-50642778-.-G-A&quot;</code></pre>
+<pre><code>[1] &quot;chr14-62407765-.-T-A&quot;</code></pre>
+<pre><code>[1] &quot;chr14-69691477-.-G-T&quot;</code></pre>
+<pre><code>[1] &quot;chr15-58605950-.-C-G&quot;</code></pre>
+<pre><code>[1] &quot;chr15-74727869-.-C-T&quot;</code></pre>
+<pre><code>[1] &quot;chr16-32593683-.-A-G&quot;</code></pre>
+<pre><code>[1] &quot;chr16-75648687-.-G-A&quot;</code></pre>
+<pre><code>[1] &quot;chr17-61305603-.-G-A&quot;</code></pre>
+<pre><code>[1] &quot;chr17-69219676-.-G-A&quot;</code></pre>
+<pre><code>[1] &quot;chr18-51300216-.-T-A&quot;</code></pre>
+<pre><code>[1] &quot;chr18-89347666-.-A-G&quot;</code></pre>
+<pre><code>[1] &quot;chr19-29815794-.-A-T&quot;</code></pre>
+<pre><code>[1] &quot;chr19-45958839-.-A-T&quot;</code></pre>
+<pre><code>[1] &quot;chr19-53469239-.-A-G&quot;</code></pre>
+<pre class="r"><code>dev.off()</code></pre>
+<pre><code>png 
+  2 </code></pre>
+</div>
+<div id="figure-panel-for-publication" class="section level3">
+<h3>Figure panel for publication</h3>
+<pre class="r"><code># define a function that emits the desired plot
+figA &lt;- function() {
+  par(
+    mar = c(3, 5, 1, 1),
+    mgp = c(2, 1, 0)
+  )
+  #plot phenotypes: slope and totaldistance3
+  plot(out.mr[[2]], col= &quot;blue&quot;, ylim = c(0, 30), ylab = &quot;LOD score&quot;)
+  plot(out.mr[[1]], col=  &quot;green&quot;, add=TRUE)
+  abline(h=3.2, col=&quot;red&quot;, lty=2, lwd=3)
+  # Add a legend
+  legend(&quot;topright&quot;, 
+         legend=c(&quot;Slope&quot;, &quot;Total distance traveled&quot;),
+         col=c(&quot;blue&quot;, &quot;green&quot;), lty=1, cex=0.8)
+}
+
+figB &lt;- function() {
+  par(
+    mar = c(3, 5, 1, 0.5),
+    mgp = c(2, 1, 0)
+  )
+  #only at chr 5 and 14
+  #plot phenotypes: slope and totaldistance3
+  plot(out.mr[[2]], col= &quot;blue&quot;, ylim = c(0, 30), ylab = &quot;LOD score&quot;, chr = c(5), main = &quot;QTL Interval Chr 5&quot;)
+  plot(out.mr[[1]], col=  &quot;green&quot;, add=TRUE, chr = c(5))
+  abline(h=3.2, col=&quot;red&quot;, lty=2, lwd=3)
+  #abline(v= 76.0, col=&quot;black&quot;, lty=2, lwd=1)
+  text(75.5, 29, &quot;5@76.0&quot;, cex = 0.75)
+  segments(x0 = 76,
+         x1 = 76,
+         y0 = 0,
+         y1 = 28,
+         col=&quot;black&quot;, lty=2, lwd=1)
+    segments(x0 = 72.40574,
+         x1 = 77.76853,
+         y0 = 2,
+         y1 = 2,
+         col=&quot;black&quot;, lty=1, lwd=2)
+    segments(x0 = 72.40574,
+         x1 = 72.40574,
+         y0 = 1.85,
+         y1 = 2.15,
+         col=&quot;black&quot;, lty=1, lwd=2)
+    segments(x0 = 77.76853,
+         x1 = 77.76853,
+         y0 = 1.85,
+         y1 = 2.15,
+         col=&quot;black&quot;, lty=1, lwd=2)
+    text(63, 1, &quot;1.5-LOD interval&quot;, cex = 0.75)
+  # Add a legend
+  # legend(&quot;topright&quot;, 
+  #        legend=c(&quot;Slope&quot;, &quot;Total Distance traveled&quot;),
+  #        col=c(&quot;blue&quot;, &quot;green&quot;), lty=1, cex=0.8)
+}
+
+
+figC &lt;- function() {
+  par(
+    mar = c(3, 5, 1, 0.5),
+    mgp = c(2, 1, 0)
+  )
+  #only at chr 5 and 14
+  #plot phenotypes: slope and totaldistance3
+plot(out.mr[[2]], col= &quot;blue&quot;, ylim = c(0, 30), ylab = &quot;LOD score&quot;, chr = c(14), main = &quot;QTL Interval Chr 14&quot;)
+plot(out.mr[[1]], col=  &quot;green&quot;, add=TRUE, chr = c(14))
+abline(h=3.2, col=&quot;red&quot;, lty=2, lwd=3)
+#abline(v= 76.0, col=&quot;black&quot;, lty=2, lwd=1)
+text(34, 7, &quot;14@36.1&quot;, cex = 0.75)
+segments(x0 = 36.07219,
+         x1 = 36.07219,
+         y0 = 0,
+         y1 = 6.4,
+         col=&quot;black&quot;, lty=2, lwd=1)
+segments(x0 = 26.14,
+         x1 = 36.07219,
+         y0 = 2,
+         y1 = 2,
+         col=&quot;black&quot;, lty=1, lwd=2)
+segments(x0 = 26.14,
+         x1 = 26.14,
+         y0 = 1.85,
+         y1 = 2.15,
+         col=&quot;black&quot;, lty=1, lwd=2)
+segments(x0 = 36.07219,
+         x1 = 36.07219,
+         y0 = 1.85,
+         y1 = 2.15,
+         col=&quot;black&quot;, lty=1, lwd=2)
+text(29.5, 1, &quot;1.5-LOD interval&quot;, cex = 0.75)
+  # Add a legend
+  # legend(&quot;topright&quot;, 
+  #        legend=c(&quot;Slope&quot;, &quot;Total Distance traveled&quot;),
+  #        col=c(&quot;blue&quot;, &quot;green&quot;), lty=1, cex=0.8)
+}
+
+
+figD &lt;- function() {
+ par(mar = c(5, 5, 1, 0.5), 
+     mgp = c(3, 0.8, 0))
+  #interaction_effect for slope
+  effectplot(WT144, main = &quot;&quot;,
+             mname1 = marker[[1]], 
+             mname2 = marker[[2]], ylab = &quot;Total distance traveled&quot;, 
+             xlab = marker[[2]],
+             pheno.col = 11, add.legend=F)
+  # Add a legend
+  legend(&quot;topleft&quot;, legend=c(&quot;AA&quot;, &quot;AB&quot;, &quot;BB&quot;), title = marker[[1]],
+       col=c(&quot;black&quot;,&quot;red&quot;, &quot;blue&quot;), pch = 1, lty=1, cex=0.8)
+}
+
+figE &lt;- function() {
+  par(
+    mar = c(3, 5, 1, 1),
+    mgp = c(3, 1, 0)
+  )
+  #interaction_effect for slope
+  effectplot(WT144, main = &quot;&quot;,
+             mname1 = marker[[1]], 
+             mname2 = marker[[2]], ylab = &quot;Slope&quot;,xlab = marker[[2]],
+             pheno.col = 15, add.legend=F)
+}
+
+cross = WT144
+basem = &quot;chr5-136332619-.-C-A&quot;
+
+# Plot the Dist vs age, separate by genotype for each marker
+allphen &lt;- cross$pheno
+allgeno &lt;- as.data.frame(pull.geno(cross))
+rownames(allgeno) &lt;- cross$pheno$AnimalName
+allphen &lt;- merge(allphen, allgeno, by.x=&quot;AnimalName&quot;, by.y=&quot;row.names&quot;, all.x=TRUE)
+#pdf(paste0(&quot;output/&quot;, name, &quot;.pdf&quot;))
+#for (mar in colnames(allgeno)){
+mar = &quot;chr14-69691477-.-G-T&quot;
+  print(mar)</code></pre>
+<pre><code>[1] &quot;chr14-69691477-.-G-T&quot;</code></pre>
+<pre class="r"><code>  subplot &lt;- allphen[!is.na(allphen[,mar, drop=FALSE]),] %&gt;% 
+    pivot_longer(cols = starts_with(&quot;TestAge_&quot;), names_to=&quot;test.no&quot;, values_to = &quot;Age&quot;) %&gt;% 
+    separate(test.no, c(&quot;empty1&quot;, &quot;test1&quot;)) %&gt;%
+    pivot_longer(cols = starts_with(&quot;TotalDist_&quot;), names_to=&quot;test.no.2&quot;, values_to = &quot;Dist&quot;) %&gt;%
+    separate(test.no.2, c(&quot;empty2&quot;, &quot;test2&quot;)) %&gt;% filter(test1==test2)
+  subplot &lt;- as.data.frame(subplot)
+  subplot$interactions &lt;- factor(subplot[, basem] + subplot[, mar]*3)
+  # 1:1 -&gt; 4 1:2 -&gt; 7 1:3 -&gt; 10
+  # 2:1 -&gt; 5 2:2 -&gt; 8 2:3 -&gt; 11
+  # 3:1 -&gt; 6 3:2 -&gt; 9 3:3 -&gt; 12
+  itypes  &lt;- c(1,2,3,&quot;AA:AA&quot;, &quot;AB:AA&quot;, &quot;BB:AA&quot;, 
+               &quot;AA:AB&quot;, &quot;AB:AB&quot;, &quot;BB:AB&quot;,
+               &quot;AA:BB&quot;, &quot;AB:BB&quot;, &quot;BB:BB&quot;)
+  levels(subplot$interactions) &lt;- itypes[as.integer(levels(subplot$interactions))]
+  
+  #replaces 1 2 and 3 as AA, AB and BB
+  subplot[, basem][subplot[, basem] == 1] &lt;- &quot;AA&quot;
+  subplot[, basem][subplot[, basem] == 2] &lt;- &quot;AB&quot;
+  subplot[, basem][subplot[, basem] == 3] &lt;- &quot;BB&quot;
+  subplot[, mar][subplot[, mar] == 1] &lt;- &quot;AA&quot;
+  subplot[, mar][subplot[, mar] == 2] &lt;- &quot;AB&quot;
+  subplot[, mar][subplot[, mar] == 3] &lt;- &quot;BB&quot;
+  
+  p1 &lt;- ggplot(subplot, aes(Age, Dist, color=interactions, group=interactions)) + 
+    geom_point(shape = 20, size=0.75) + 
+    #scale_color_discrete(&quot;Genotype&quot;) +
+    labs(color = &quot;Genotype&quot;) +
+    ylab(&quot;TotalDist&quot;) +
+    xlab(&quot;Test Age&quot;) +
+    #scale_color_brewer(palette = &quot;Set1&quot;) + 
+    scale_color_manual(breaks = c(&quot;AA:AA&quot;, &quot;AB:AA&quot;, &quot;BB:AA&quot;, &quot;AA:AB&quot;,
+                                  &quot;AB:AB&quot;, &quot;BB:AB&quot;, &quot;AA:BB&quot;, &quot;AB:BB&quot;, &quot;BB:BB&quot;),
+                       #values = RColorBrewer::brewer.pal(9, &quot;Set1&quot;)[9:1]) +
+                       values = c(&quot;#999999&quot;, &quot;#F781BF&quot;, &quot;#A65628&quot;,&quot;#9a9a00&quot;, &quot;#FF7F00&quot;, &quot;#984EA3&quot;, &quot;#4DAF4A&quot;, &quot;#377EB8&quot;, &quot;#E41A1C&quot;)) +
+    stat_smooth(method=&quot;lm&quot;, show.legend = FALSE, formula = y~x) + 
+    labs(title=paste0(&quot;effect for markers &quot;, basem, &quot; x &quot;, mar)) +
+    theme_bw()
+  print(p1)</code></pre>
+<pre><code>Warning: Removed 29 rows containing non-finite values (stat_smooth).</code></pre>
+<pre><code>Warning: Removed 29 rows containing missing values (geom_point).</code></pre>
+<p><img src="figure/QTL_analysis_for_Crichton_final.Rmd/Figure%20panel%20for%20publication-1.png" width="816" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>  p2 &lt;- ggplot(subplot, aes(Age, Dist, color=interactions, group=interactions)) +
+    geom_point(shape = 20, show.legend = FALSE) +
+    geom_line(aes(group = AnimalName, color = interactions), show.legend = FALSE, alpha = 0.2) +  
+    geom_smooth(method=&#39;lm&#39;, formula= y~x, show.legend = FALSE, size = 1) +
+    #scale_color_discrete(&quot;Genotype&quot;) +
+    labs(color = &quot;Genotype&quot;) +
+    ylab(&quot;Total distance traveled / Chr14&quot;) +
+    xlab(&quot;Test age / Chr5&quot;) +
+    #scale_color_brewer(palette = &quot;Set1&quot;) + 
+    scale_color_manual(breaks = c(&quot;AA:AA&quot;, &quot;AB:AA&quot;, &quot;BB:AA&quot;, &quot;AA:AB&quot;,
+                                  &quot;AB:AB&quot;, &quot;BB:AB&quot;, &quot;AA:BB&quot;, &quot;AB:BB&quot;, &quot;BB:BB&quot;),
+                       #values = RColorBrewer::brewer.pal(9, &quot;Set1&quot;)[9:1]) +
+                       values = c(&quot;#999999&quot;, &quot;#F781BF&quot;, &quot;#A65628&quot;,&quot;#9a9a00&quot;, &quot;#FF7F00&quot;, &quot;#984EA3&quot;, &quot;#4DAF4A&quot;, &quot;#377EB8&quot;, &quot;#E41A1C&quot;)) +
+    stat_smooth(method=&quot;lm&quot;, show.legend = FALSE, formula = y~x) + 
+    labs(title=paste0(&quot;Interaction effect between Chr5 and Chr14&quot;)) +
+    facet_grid(rows = vars(subplot[, basem]), cols = vars(subplot[, mar])) +
+    theme_bw() +
+    theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank()) +
+    theme(plot.title = element_text(hjust = 0.5))
+  print(p2)</code></pre>
+<pre><code>Warning: Removed 29 rows containing non-finite values (stat_smooth).</code></pre>
+<pre><code>Warning: Removed 29 rows containing non-finite values (stat_smooth).</code></pre>
+<pre><code>Warning: Removed 29 rows containing missing values (geom_point).</code></pre>
+<pre><code>Warning: Removed 29 row(s) containing missing values (geom_path).</code></pre>
+<p><img src="figure/QTL_analysis_for_Crichton_final.Rmd/Figure%20panel%20for%20publication-2.png" width="816" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>pp2 = plot_grid(figB, figC, labels = c(&quot;B&quot;, &quot;C&quot;), align = &#39;h&#39;, ncol=2)
+pp3 = plot_grid(figD, p2, labels = c(&quot;D&quot;, &quot;E&quot;), align = &#39;h&#39;,ncol=2)</code></pre>
+<pre><code>Warning: Removed 29 rows containing non-finite values (stat_smooth).</code></pre>
+<pre><code>Warning: Removed 29 rows containing non-finite values (stat_smooth).</code></pre>
+<pre><code>Warning: Removed 29 rows containing missing values (geom_point).</code></pre>
+<pre><code>Warning: Removed 29 row(s) containing missing values (geom_path).</code></pre>
+<pre><code>Warning: Graphs cannot be horizontally aligned unless the axis parameter is set.
+Placing graphs unaligned.</code></pre>
+<pre class="r"><code>pdf(&quot;output/figure_panel.pdf&quot;, width = 8.5, height = 11)
+plot_grid(figA, labels = c(&#39;A&#39;, &#39;&#39;),
+  pp2,
+  pp3,
+  nrow = 3
+)
+dev.off()</code></pre>
+<pre><code>png 
+  2 </code></pre>
+<pre class="r"><code>plot_grid(figA, labels = c(&#39;A&#39;, &#39;&#39;),
+  pp2,
+  pp3,
+  nrow = 3
+)</code></pre>
+<p><img src="figure/QTL_analysis_for_Crichton_final.Rmd/Figure%20panel%20for%20publication-3.png" width="816" style="display: block; margin: auto;" /></p>
+<br>
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
+<span class="glyphicon glyphicon-wrench" aria-hidden="true"></span> Session information
+</button>
+</p>
+<div id="workflowr-sessioninfo" class="collapse">
+<pre class="r"><code>sessionInfo()</code></pre>
+<pre><code>R version 4.0.3 (2020-10-10)
+Platform: x86_64-pc-linux-gnu (64-bit)
+Running under: Ubuntu 20.04.2 LTS
+
+Matrix products: default
+BLAS/LAPACK: /usr/lib/x86_64-linux-gnu/openblas-pthread/libopenblasp-r0.3.8.so
+
+locale:
+ [1] LC_CTYPE=en_US.UTF-8       LC_NUMERIC=C              
+ [3] LC_TIME=en_US.UTF-8        LC_COLLATE=en_US.UTF-8    
+ [5] LC_MONETARY=en_US.UTF-8    LC_MESSAGES=C             
+ [7] LC_PAPER=en_US.UTF-8       LC_NAME=C                 
+ [9] LC_ADDRESS=C               LC_TELEPHONE=C            
+[11] LC_MEASUREMENT=en_US.UTF-8 LC_IDENTIFICATION=C       
+
+attached base packages:
+[1] stats     graphics  grDevices utils     datasets  methods   base     
+
+other attached packages:
+ [1] cowplot_1.1.1     qtl2_0.24         lmerTest_3.1-3    lme4_1.1-26      
+ [5] Matrix_1.3-2      forcats_0.5.1     stringr_1.4.0     dplyr_1.0.4      
+ [9] purrr_0.3.4       readr_1.4.0       tidyr_1.1.2       tibble_3.0.6     
+[13] tidyverse_1.3.0   qtlcharts_0.12-10 qtl_1.47-9        gridExtra_2.3    
+[17] ggplot2_3.3.3     workflowr_1.6.2  
+
+loaded via a namespace (and not attached):
+ [1] nlme_3.1-152        fs_1.5.0            lubridate_1.7.9.2  
+ [4] bit64_4.0.5         RColorBrewer_1.1-2  httr_1.4.2         
+ [7] rprojroot_2.0.2     numDeriv_2016.8-1.1 tools_4.0.3        
+[10] backports_1.2.1     R6_2.5.0            mgcv_1.8-34        
+[13] DBI_1.1.1           colorspace_2.0-0    withr_2.4.1        
+[16] tidyselect_1.1.0    bit_4.0.4           compiler_4.0.3     
+[19] git2r_0.28.0        cli_2.3.0           rvest_0.3.6        
+[22] xml2_1.3.2          labeling_0.4.2      scales_1.1.1       
+[25] digest_0.6.27       minqa_1.2.4         rmarkdown_2.6      
+[28] pkgconfig_2.0.3     htmltools_0.5.1.1   highr_0.8          
+[31] dbplyr_2.1.0        fastmap_1.1.0       rlang_1.0.2        
+[34] readxl_1.3.1        rstudioapi_0.13     RSQLite_2.2.3      
+[37] gridGraphics_0.5-1  farver_2.0.3        generics_0.1.0     
+[40] jsonlite_1.7.2      magrittr_2.0.1      Rcpp_1.0.6         
+[43] munsell_0.5.0       lifecycle_1.0.0     stringi_1.5.3      
+[46] whisker_0.4         yaml_2.2.1          MASS_7.3-53.1      
+[49] grid_4.0.3          blob_1.2.1          parallel_4.0.3     
+[52] promises_1.2.0.1    crayon_1.4.1        lattice_0.20-41    
+[55] haven_2.3.1         splines_4.0.3       hms_1.0.0          
+[58] knitr_1.31          pillar_1.4.7        boot_1.3-27        
+[61] reprex_1.0.0        glue_1.4.2          evaluate_0.14      
+[64] data.table_1.13.6   modelr_0.1.8        vctrs_0.3.6        
+[67] nloptr_1.2.2.2      httpuv_1.5.5        cellranger_1.1.0   
+[70] gtable_0.3.0        assertthat_0.2.1    cachem_1.0.4       
+[73] xfun_0.21           broom_0.7.4         later_1.1.0.1      
+[76] memoise_2.0.0       statmod_1.4.35      ellipsis_0.3.1     </code></pre>
+</div>
+</div>
+
+
+<!-- Adjust MathJax settings so that all math formulae are shown using
+TeX fonts only; see
+http://docs.mathjax.org/en/latest/configuration.html.  This will make
+the presentation more consistent at the cost of the webpage sometimes
+taking slightly longer to load. Note that this only works because the
+footer is added to webpages before the MathJax javascript. -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    "HTML-CSS": { availableFonts: ["TeX"] }
+  });
+</script>
+
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open')
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
