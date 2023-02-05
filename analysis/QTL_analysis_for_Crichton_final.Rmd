@@ -493,7 +493,7 @@ figC <- function() {
   )
   #only at chr 5 and 14
   #plot phenotypes: slope and totaldistance3
-plot(out.mr[[2]], col= "blue", ylim = c(0, 30), ylab = "LOD score", chr = c(14), main = "QTL Interval Chr 14")
+plot(out.mr[[2]], col= "blue", ylim = c(0, 10), ylab = "LOD score", chr = c(14), main = "QTL Interval Chr 14")
 plot(out.mr[[1]], col=  "green", add=TRUE, chr = c(14))
 abline(h=3.2, col="red", lty=2, lwd=3)
 #abline(v= 76.0, col="black", lty=2, lwd=1)
@@ -603,14 +603,16 @@ mar = "chr14-69691477-.-G-T"
     theme_bw()
   print(p1)
   
+  colnames(subplot)[colnames(subplot) == basem] = "Chr5"
+  colnames(subplot)[colnames(subplot) == mar] = "Chr14"
   p2 <- ggplot(subplot, aes(Age, Dist, color=interactions, group=interactions)) +
     geom_point(shape = 20, show.legend = FALSE) +
     geom_line(aes(group = AnimalName, color = interactions), show.legend = FALSE, alpha = 0.2) +  
     geom_smooth(method='lm', formula= y~x, show.legend = FALSE, size = 1) +
     #scale_color_discrete("Genotype") +
     labs(color = "Genotype") +
-    ylab("Total distance traveled / Chr14") +
-    xlab("Test age / Chr5") +
+    ylab("Total distance traveled / Chr5") +
+    xlab("Test age / Chr14") +
     #scale_color_brewer(palette = "Set1") + 
     scale_color_manual(breaks = c("AA:AA", "AB:AA", "BB:AA", "AA:AB",
                                   "AB:AB", "BB:AB", "AA:BB", "AB:BB", "BB:BB"),
@@ -618,7 +620,7 @@ mar = "chr14-69691477-.-G-T"
                        values = c("#999999", "#F781BF", "#A65628","#9a9a00", "#FF7F00", "#984EA3", "#4DAF4A", "#377EB8", "#E41A1C")) +
     stat_smooth(method="lm", show.legend = FALSE, formula = y~x) + 
     labs(title=paste0("Interaction effect between Chr5 and Chr14")) +
-    facet_grid(rows = vars(subplot[, basem]), cols = vars(subplot[, mar])) +
+    facet_grid(rows = vars(Chr5), cols = vars(Chr14), labeller = label_both) +
     theme_bw() +
     theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank()) +
     theme(plot.title = element_text(hjust = 0.5))
