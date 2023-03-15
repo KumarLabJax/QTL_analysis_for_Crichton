@@ -1,0 +1,231 @@
+---
+title: "Variant_plot"
+author: "Hao He"
+output:
+  workflowr::wflow_html:
+    toc: true
+    toc_float: true
+editor_options: 
+  markdown: 
+    wrap: 72
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+### Library
+```{r library, message=FALSE, warning=FALSE}
+library(tidyverse)
+library(parallel)
+library(Rsamtools)
+library(data.table)
+library(ensemblVEP)
+library(karyoploteR)
+library(vcfR)
+library(biomaRt)
+library(regioneR)
+library(qtl2)
+```
+
+### Homo variants plot for Two WT144 WGS
+```{r Homo variants plot for Two WT144 WGS, fig.width=11, fig.height=9}
+# GES15-07028-C-WT144G8N2F70426M.final_variants_filtered_dbsnp_snp --------
+#read vcf GES15-07028-C-WT144G8N2F70426M.final_variants_filtered_dbsnp_snpEff_nointersect_noindels_homo.recode.vcf
+vcf.file1 = "/projects/compsci/legacy/USERS/peera/Kumar_lab/WT144_markers/GES15-07028-C-WT144G8N2F70426M.final_variants_filtered_dbsnp_snpEff_nointersect_noindels_homo.recode.vcf"
+vcf1 = read.vcfR(vcf.file1)
+#snp
+snp1 <- vcf1@fix %>%
+  as.data.frame() %>%
+  dplyr::select(1:5) %>%
+  dplyr::mutate(ID = case_when(
+    is.na(ID) ~ paste0(CHROM, "_", POS),
+    TRUE ~ ID
+  )) %>%
+  dplyr::mutate(pos0 = as.numeric(POS)-1) %>%
+  dplyr::select(CHROM, pos0, POS) %>%
+  toGRanges()
+
+# GES15-07029-D-WT144G8N2F703F.final_variants_filtered_dbsnp --------
+#read vcf GES15-07029-D-WT144G8N2F703F.final_variants_filtered_dbsnp_snpEff_nointersect_noindels_homo.recode.vcf
+vcf.file2 = "/projects/compsci/legacy/USERS/peera/Kumar_lab/WT144_markers/GES15-07029-D-WT144G8N2F703F.final_variants_filtered_dbsnp_snpEff_nointersect_noindels_homo.recode.vcf"
+vcf2 = read.vcfR(vcf.file2)
+#snp
+snp2 <- vcf2@fix %>%
+  as.data.frame() %>%
+  dplyr::select(1:5) %>%
+  dplyr::mutate(ID = case_when(
+    is.na(ID) ~ paste0(CHROM, "_", POS),
+    TRUE ~ ID
+  )) %>%
+  dplyr::mutate(pos0 = as.numeric(POS)-1) %>%
+  dplyr::select(CHROM, pos0, POS) %>%
+  toGRanges()
+
+#plot
+pp <- getDefaultPlotParams(plot.type=2)
+pp$data1height <- 140
+pp$data2height <- 140
+pp$topmargin <- 300
+kp <- plotKaryotype(genome = "mm10", plot.type = 2, plot.params = pp)
+kpAddMainTitle(kp, main="WT144 homozygous variants", cex = 1.2)
+kpDataBackground(kp, data.panel = 1, color = "white")
+kpDataBackground(kp, data.panel = 2, color = "white")
+kpPlotRegions(kp, data=snp1, col="blue", avoid.overlapping = FALSE, r0 = 0, r1 = 0.8, data.panel = 1)
+kpPlotRegions(kp, data=snp2, col="red",  avoid.overlapping = FALSE, r0 = 0, r1 = 0.8, data.panel = 2)
+
+#save plot
+pdf(file = "output/WT144_variants_nointersect_noindels_homo.pdf", width = 11, height = 9)
+pp <- getDefaultPlotParams(plot.type=2)
+pp$data1height <- 140
+pp$data2height <- 140
+pp$topmargin <- 300
+kp <- plotKaryotype(genome = "mm10", plot.type = 2, plot.params = pp)
+kpAddMainTitle(kp, main="WT144 homozygous variants", cex = 1.2)
+kpDataBackground(kp, data.panel = 1, color = "white")
+kpDataBackground(kp, data.panel = 2, color = "white")
+kpPlotRegions(kp, data=snp1, col="blue", avoid.overlapping = FALSE, r0 = 0, r1 = 0.8, data.panel = 1)
+kpPlotRegions(kp, data=snp2, col="red",  avoid.overlapping = FALSE, r0 = 0, r1 = 0.8, data.panel = 2)
+dev.off()
+```
+### WT144 QTL interval
+```{r WT144 QTL interval, fig.width=10, fig.height=8}
+#genes in the qtl region
+query_variants <- create_variant_query_func("/projects/compsci/vmp/USERS/heh/DO_Opioid/data/cc_variants.sqlite")
+query_genes <- create_gene_query_func("/projects/compsci/vmp/USERS/heh/DO_Opioid/data/mouse_genes_mgi.sqlite")
+
+#chr5 interval-----------------------------------------------------------------------
+#the interval for chr5 is 72.40547 to 77.76853 cM, in bp is 133052642 to 138956439
+#Ssc4d at chr5 135.9602 - 135.9745; MGI:MGI:1924709
+chr5_gene <- query_genes(chr = 5, 129, 139) %>%
+  dplyr::filter(!str_detect(Name, "^Gm")) # remove gene starting with Gm
+  # dplyr::mutate(Name = case_when(
+  #   str_detect(Name, "^Gm") ~ "",
+  #   TRUE ~ as.character(Name)
+  #   ))
+
+#variant
+vcf.file3 = "/projects/compsci/legacy/USERS/peera/Kumar_lab/WT144_markers/final_list_of_markers.vcf"
+vcf3 = read.vcfR(vcf.file3)
+#snp
+chr5.region <- vcf3@fix %>%
+  as.data.frame() %>%
+  dplyr::mutate(POS = as.numeric(POS)) %>%
+  dplyr::mutate(eff = str_match(INFO, ";EFF=\\s*(.*?)\\s*;")[,2]) %>%
+  dplyr::mutate(anno = gsub("\\(.*", "", eff)) %>%
+  dplyr::filter(CHROM == "chr5") %>%
+  dplyr::filter(between(POS, 129*1e6, 139*1e6)) %>%
+  dplyr::mutate(anno = as.factor(anno))
+
+
+# 2 x 1 panels; adjust margins
+old_mfrow <- par("mfrow")
+old_mar <- par("mar")
+on.exit(par(mfrow=old_mfrow, mar=old_mar))
+layout(rbind(1,2), heights=c(2, 4))
+top_mar <- bottom_mar <- old_mar
+top_mar <- c(0.01, 10, 2, 2)
+bottom_mar <- c(5.10, 10, 0.01, 2)
+
+par(mar=top_mar)
+#Create the base plot
+plot(chr5.region$POS, chr5.region$anno, type = "n", xaxt = "n",
+     xlab = "POS",ylab = "", yaxt = "n", main = "WT144 Chr5 QTL interval")
+# Add points to the plot
+points(chr5.region$POS, chr5.region$anno, pch = "|", cex = 1, col = "red")
+box()  # Add a box around the plot
+# Change the y-axis tick labels
+axis(2, 1:length(levels(chr5.region$anno)), labels = levels(chr5.region$anno), las = 1, cex.axis = 0.65)
+#bottom
+par(mar=bottom_mar)
+plot_genes(chr5_gene, bgcolor="white")
+
+# save the plot
+pdf(file = "output/wt144_chr5_qtlinterval.pdf", width = 10, height = 8)
+# 2 x 1 panels; adjust margins
+old_mfrow <- par("mfrow")
+old_mar <- par("mar")
+on.exit(par(mfrow=old_mfrow, mar=old_mar))
+layout(rbind(1,2), heights=c(2, 4))
+top_mar <- bottom_mar <- old_mar
+top_mar <- c(0.01, 10, 2, 2)
+bottom_mar <- c(5.10, 10, 0.01, 2)
+
+par(mar=top_mar)
+#Create the base plot
+plot(chr5.region$POS, chr5.region$anno, type = "n", xaxt = "n",
+     xlab = "POS",ylab = "", yaxt = "n", main = "WT144 Chr5 QTL interval")
+# Add points to the plot
+points(chr5.region$POS, chr5.region$anno, pch = "|", cex = 1, col = "red")
+box()  # Add a box around the plot
+# Change the y-axis tick labels
+axis(2, 1:length(levels(chr5.region$anno)), labels = levels(chr5.region$anno), las = 1, cex.axis = 0.65)
+#bottom
+par(mar=bottom_mar)
+plot_genes(chr5_gene, bgcolor="white")
+dev.off()
+
+#chr14 interval-----------------------------------------------------------------------
+#the interval for chr14 is 26.14972 to 36.07219 cM, in bp is 50642778 to 69691477
+#Kpna3 at chr14 61.36519 - 61.43995; MGI:MGI:1100863
+chr14_gene <- query_genes(chr = 14, 59.642778, 69.691477) %>%
+  dplyr::filter(!str_detect(Name, "^Gm")) # remove gene starting with Gm
+#snp
+chr14.region <- vcf3@fix %>%
+  as.data.frame() %>%
+  dplyr::mutate(POS = as.numeric(POS)) %>%
+  dplyr::mutate(eff = str_match(INFO, ";EFF=\\s*(.*?)\\s*;")[,2]) %>%
+  dplyr::mutate(anno = gsub("\\(.*", "", eff)) %>%
+  dplyr::filter(CHROM == "chr14") %>%
+  dplyr::filter(between(POS, 59.642778*1e6, 69.691477*1e6)) %>%
+  dplyr::mutate(anno = as.factor(anno))
+
+# 2 x 1 panels; adjust margins
+old_mfrow <- par("mfrow")
+old_mar <- par("mar")
+on.exit(par(mfrow=old_mfrow, mar=old_mar))
+layout(rbind(1,2), heights=c(0.5, 2))
+top_mar <- bottom_mar <- old_mar
+top_mar <- c(0.01, 10, 2, 2)
+bottom_mar <- c(5.10, 10, 0.01, 2)
+
+par(mar=top_mar)
+#Create the base plot
+plot(chr14.region$POS, chr14.region$anno, type = "n", xaxt = "n",
+     xlab = "POS",ylab = "", yaxt = "n", main = "WT144 Chr14 QTL interval")
+# Add points to the plot
+points(chr14.region$POS, chr14.region$anno, pch = "|", cex = 1, col = "red")
+box()  # Add a box around the plot
+# Change the y-axis tick labels
+axis(2, 1:length(levels(chr14.region$anno)), labels = levels(chr14.region$anno), las = 1, cex.axis = 0.65)
+#bottom
+par(mar=bottom_mar)
+plot_genes(chr14_gene, bgcolor="white")
+
+# save the plot
+pdf(file = "output/wt144_chr14_qtlinterval.pdf", width = 10, height = 8)
+# 2 x 1 panels; adjust margins
+old_mfrow <- par("mfrow")
+old_mar <- par("mar")
+on.exit(par(mfrow=old_mfrow, mar=old_mar))
+layout(rbind(1,2), heights=c(0.5, 2))
+top_mar <- bottom_mar <- old_mar
+top_mar <- c(0.01, 10, 2, 2)
+bottom_mar <- c(5.10, 10, 0.01, 2)
+
+par(mar=top_mar)
+#Create the base plot
+plot(chr14.region$POS, chr14.region$anno, type = "n", xaxt = "n",
+     xlab = "POS",ylab = "", yaxt = "n", main = "WT144 Chr14 QTL interval")
+# Add points to the plot
+points(chr14.region$POS, chr14.region$anno, pch = "|", cex = 1, col = "red")
+box()  # Add a box around the plot
+# Change the y-axis tick labels
+axis(2, 1:length(levels(chr14.region$anno)), labels = levels(chr14.region$anno), las = 1, cex.axis = 0.65)
+#bottom
+par(mar=bottom_mar)
+plot_genes(chr14_gene, bgcolor="white")
+dev.off()
+
+```
+

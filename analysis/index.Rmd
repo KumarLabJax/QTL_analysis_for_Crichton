@@ -15,3 +15,6 @@ editor_options:
 
 ### QTL_analysis_for_Crichton_final
 * [QTL_analysis_for_Crichton_final.Rmd](QTL_analysis_for_Crichton_final.html)
+
+### Variant_plot
+* [Variant_plot.Rmd](Variant_plot.html)
