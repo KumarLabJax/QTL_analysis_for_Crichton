@@ -515,16 +515,16 @@ This reproducible <a href="http://rmarkdown.rstudio.com">R Markdown</a> analysis
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsghpgZ6sSPKNx11v77sSgITOIvpJI94FN62ln5MXgithubcomKumarLabJaxQTLanalysisforCrichtontree9e3e4c4c3b26d4a63fa9b2e4c787058e9cb19a9btargetblank9e3e4c4a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://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@github.com/KumarLabJax/QTL_analysis_for_Crichton/tree/9e3e4c4c3b26d4a63fa9b2e4c787058e9cb19a9b" target="_blank">9e3e4c4</a> </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsghpgZ6sSPKNx11v77sSgITOIvpJI94FN62ln5MXgithubcomKumarLabJaxQTLanalysisforCrichtontree1b6247106fd5867ac7531a3c2a03d4d4b25f18cdtargetblank1b62471a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://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@github.com/KumarLabJax/QTL_analysis_for_Crichton/tree/1b6247106fd5867ac7531a3c2a03d4d4b25f18cd" target="_blank">1b62471</a> </a>
 </p>
 </div>
-<div id="strongRepositoryversionstrongahrefhttpsghpgZ6sSPKNx11v77sSgITOIvpJI94FN62ln5MXgithubcomKumarLabJaxQTLanalysisforCrichtontree9e3e4c4c3b26d4a63fa9b2e4c787058e9cb19a9btargetblank9e3e4c4a" class="panel-collapse collapse">
+<div id="strongRepositoryversionstrongahrefhttpsghpgZ6sSPKNx11v77sSgITOIvpJI94FN62ln5MXgithubcomKumarLabJaxQTLanalysisforCrichtontree1b6247106fd5867ac7531a3c2a03d4d4b25f18cdtargetblank1b62471a" class="panel-collapse collapse">
 <div class="panel-body">
 <p>
 Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility.
 </p>
 <p>
-The results in this page were generated with repository version <a href="https://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@github.com/KumarLabJax/QTL_analysis_for_Crichton/tree/9e3e4c4c3b26d4a63fa9b2e4c787058e9cb19a9b" target="_blank">9e3e4c4</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
+The results in this page were generated with repository version <a href="https://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@github.com/KumarLabJax/QTL_analysis_for_Crichton/tree/1b6247106fd5867ac7531a3c2a03d4d4b25f18cd" target="_blank">1b62471</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
 </p>
 <p>
 Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
@@ -557,6 +557,7 @@ Untracked files:
     Untracked:  output/qtl.out.obj.mixedmodel.RData
     Untracked:  output/qtl.out.obj.mixedmodel.final.RData
     Untracked:  output/wt144_chr14_qtlinterval.pdf
+    Untracked:  output/wt144_chr5_and_chr14_qtlinterval.pdf
     Untracked:  output/wt144_chr5_qtlinterval.pdf
 
 Unstaged changes:
@@ -599,6 +600,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://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@github.com/KumarLabJax/QTL_analysis_for_Crichton/blob/1b6247106fd5867ac7531a3c2a03d4d4b25f18cd/analysis/Variant_plot.Rmd" target="_blank">1b62471</a>
+</td>
+<td>
+xhyuo
+</td>
+<td>
+2023-03-15
+</td>
+<td>
+one plot for chr5 and chr14
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://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@github.com/KumarLabJax/QTL_analysis_for_Crichton/blob/7ee5a3851e89c6208568f11a08f026ecc9a3be9b/docs/Variant_plot.html" target="_blank">7ee5a38</a>
+</td>
+<td>
+xhyuo
+</td>
+<td>
+2023-03-15
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -722,6 +757,43 @@ kpDataBackground(kp, data.panel = 2, color = &quot;white&quot;)
 kpPlotRegions(kp, data=snp1, col=&quot;blue&quot;, avoid.overlapping = FALSE, r0 = 0, r1 = 0.8, data.panel = 1)
 kpPlotRegions(kp, data=snp2, col=&quot;red&quot;,  avoid.overlapping = FALSE, r0 = 0, r1 = 0.8, data.panel = 2)</code></pre>
 <p><img src="figure/Variant_plot.Rmd/Homo%20variants%20plot%20for%20Two%20WT144%20WGS-1.png" width="1056" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-Homo-variants-plot-for-Two-WT144-WGS-1">
+Past versions of “Homo variants plot for Two WT144 WGS-1.png”
+</button>
+</p>
+<div id="fig-no-spaces-Homo-variants-plot-for-Two-WT144-WGS-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://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@github.com/KumarLabJax/QTL_analysis_for_Crichton/blob/7ee5a3851e89c6208568f11a08f026ecc9a3be9b/docs/figure/Variant_plot.Rmd/Homo variants plot for Two WT144 WGS-1.png" target="_blank">7ee5a38</a>
+</td>
+<td>
+xhyuo
+</td>
+<td>
+2023-03-15
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>#save plot
 pdf(file = &quot;output/WT144_variants_nointersect_noindels_homo.pdf&quot;, width = 11, height = 9)
 pp &lt;- getDefaultPlotParams(plot.type=2)
@@ -783,9 +855,9 @@ chr5.region &lt;- vcf3@fix %&gt;%
   dplyr::mutate(eff = str_match(INFO, &quot;;EFF=\\s*(.*?)\\s*;&quot;)[,2]) %&gt;%
   dplyr::mutate(anno = gsub(&quot;\\(.*&quot;, &quot;&quot;, eff)) %&gt;%
   dplyr::filter(CHROM == &quot;chr5&quot;) %&gt;%
-  dplyr::filter(between(POS, 129*1e6, 139*1e6)) %&gt;%
-  dplyr::mutate(anno = as.factor(anno))
-
+  dplyr::filter(between(POS, 129*1e6, 139*1e6))
+chr5.region &lt;- chr5.region %&gt;%
+  dplyr::mutate(anno = factor(anno, levels = c(&quot;INTRON&quot;, &quot;INTERGENIC&quot;, &quot;DOWNSTREAM&quot;, &quot;EXON&quot;, &quot;NON_SYNONYMOUS_CODING&quot;)))
 
 # 2 x 1 panels; adjust margins
 old_mfrow &lt;- par(&quot;mfrow&quot;)
@@ -799,7 +871,7 @@ bottom_mar &lt;- c(5.10, 10, 0.01, 2)
 par(mar=top_mar)
 #Create the base plot
 plot(chr5.region$POS, chr5.region$anno, type = &quot;n&quot;, xaxt = &quot;n&quot;,
-     xlab = &quot;POS&quot;,ylab = &quot;&quot;, yaxt = &quot;n&quot;, main = &quot;WT144 Chr5 QTL interval&quot;)
+     xlab = &quot;&quot;,ylab = &quot;&quot;, yaxt = &quot;n&quot;, main = &quot;WT144 Chr5 QTL interval&quot;)
 # Add points to the plot
 points(chr5.region$POS, chr5.region$anno, pch = &quot;|&quot;, cex = 1, col = &quot;red&quot;)
 box()  # Add a box around the plot
@@ -809,6 +881,43 @@ axis(2, 1:length(levels(chr5.region$anno)), labels = levels(chr5.region$anno), l
 par(mar=bottom_mar)
 plot_genes(chr5_gene, bgcolor=&quot;white&quot;)</code></pre>
 <p><img src="figure/Variant_plot.Rmd/WT144%20QTL%20interval-1.png" width="960" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-WT144-QTL-interval-1">
+Past versions of “WT144 QTL interval-1.png”
+</button>
+</p>
+<div id="fig-no-spaces-WT144-QTL-interval-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://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@github.com/KumarLabJax/QTL_analysis_for_Crichton/blob/7ee5a3851e89c6208568f11a08f026ecc9a3be9b/docs/figure/Variant_plot.Rmd/WT144 QTL interval-1.png" target="_blank">7ee5a38</a>
+</td>
+<td>
+xhyuo
+</td>
+<td>
+2023-03-15
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code># save the plot
 pdf(file = &quot;output/wt144_chr5_qtlinterval.pdf&quot;, width = 10, height = 8)
 # 2 x 1 panels; adjust margins
@@ -823,7 +932,7 @@ bottom_mar &lt;- c(5.10, 10, 0.01, 2)
 par(mar=top_mar)
 #Create the base plot
 plot(chr5.region$POS, chr5.region$anno, type = &quot;n&quot;, xaxt = &quot;n&quot;,
-     xlab = &quot;POS&quot;,ylab = &quot;&quot;, yaxt = &quot;n&quot;, main = &quot;WT144 Chr5 QTL interval&quot;)
+     xlab = &quot;&quot;,ylab = &quot;&quot;, yaxt = &quot;n&quot;, main = &quot;WT144 Chr5 QTL interval&quot;)
 # Add points to the plot
 points(chr5.region$POS, chr5.region$anno, pch = &quot;|&quot;, cex = 1, col = &quot;red&quot;)
 box()  # Add a box around the plot
@@ -872,6 +981,43 @@ axis(2, 1:length(levels(chr14.region$anno)), labels = levels(chr14.region$anno),
 par(mar=bottom_mar)
 plot_genes(chr14_gene, bgcolor=&quot;white&quot;)</code></pre>
 <p><img src="figure/Variant_plot.Rmd/WT144%20QTL%20interval-2.png" width="960" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-WT144-QTL-interval-2">
+Past versions of “WT144 QTL interval-2.png”
+</button>
+</p>
+<div id="fig-no-spaces-WT144-QTL-interval-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://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@github.com/KumarLabJax/QTL_analysis_for_Crichton/blob/7ee5a3851e89c6208568f11a08f026ecc9a3be9b/docs/figure/Variant_plot.Rmd/WT144 QTL interval-2.png" target="_blank">7ee5a38</a>
+</td>
+<td>
+xhyuo
+</td>
+<td>
+2023-03-15
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code># save the plot
 pdf(file = &quot;output/wt144_chr14_qtlinterval.pdf&quot;, width = 10, height = 8)
 # 2 x 1 panels; adjust margins
@@ -894,6 +1040,83 @@ box()  # Add a box around the plot
 axis(2, 1:length(levels(chr14.region$anno)), labels = levels(chr14.region$anno), las = 1, cex.axis = 0.65)
 #bottom
 par(mar=bottom_mar)
+plot_genes(chr14_gene, bgcolor=&quot;white&quot;)
+dev.off()</code></pre>
+<pre><code>png 
+  2 </code></pre>
+<pre class="r"><code>#chr5 and chr14 in one figure-----------------------------------------------------
+layout(mat = matrix(c(1:4), 
+                    nrow = 2, 
+                    ncol = 2),
+       heights = c(1, 2),    # Heights of the two rows
+       widths = c(3, 2.25))     # Widths of the two columns
+
+# Plot 1
+par(mar = c(0.01, 10, 2, 0.5))
+#Create the base plot
+plot(chr5.region$POS, chr5.region$anno, type = &quot;n&quot;, xaxt = &quot;n&quot;,
+     xlab = &quot;&quot;, ylab = &quot;&quot;, yaxt = &quot;n&quot;, main = &quot;WT144 Chr5 QTL interval&quot;)
+# Add points to the plot
+points(chr5.region$POS, chr5.region$anno, pch = &quot;|&quot;, cex = 2, col = &quot;red&quot;)
+box()  # Add a box around the plot
+# Change the y-axis tick labels
+axis(2, 1:length(levels(chr5.region$anno)), labels = levels(chr5.region$anno), font = 2, las = 1, cex.axis = 0.7)
+
+# Plot 2
+par(mar = c(5.10, 10, 0.01, 0.5))
+plot_genes(chr5_gene, bgcolor=&quot;white&quot;)
+
+# Plot 3
+par(mar = c(0.01, 0.01, 2, 0.5))
+#Create the base plot
+plot(chr14.region$POS, chr14.region$anno, type = &quot;n&quot;, xaxt = &quot;n&quot;,
+     xlab = &quot;&quot;, ylab = &quot;&quot;, yaxt = &quot;n&quot;, main = &quot;WT144 Chr14 QTL interval&quot;)
+# Add points to the plot
+points(chr14.region$POS, chr14.region$anno, pch = &quot;|&quot;, cex = 2, col = &quot;red&quot;)
+box()  # Add a box around the plot
+# Change the y-axis tick labels
+axis(2, 1:length(levels(chr14.region$anno)), labels = FALSE, las = 1, font = 2, cex.axis = 0.7, tick = FALSE)
+
+# Plot 4
+par(mar = c(5.10, 0.01, 0.01, 0.5))
+plot_genes(chr14_gene, bgcolor=&quot;white&quot;)</code></pre>
+<p><img src="figure/Variant_plot.Rmd/WT144%20QTL%20interval-3.png" width="960" style="display: block; margin: auto;" /></p>
+<pre class="r"><code># save the plot
+pdf(file = &quot;output/wt144_chr5_and_chr14_qtlinterval.pdf&quot;, width = 11.7, height = 8.3)# Set plot layout
+layout(mat = matrix(c(1:4), 
+                    nrow = 2, 
+                    ncol = 2),
+       heights = c(1, 2),    # Heights of the two rows
+       widths = c(3, 2.25))     # Widths of the two columns
+
+# Plot 1
+par(mar = c(0.01, 10, 2, 0.5))
+#Create the base plot
+plot(chr5.region$POS, chr5.region$anno, type = &quot;n&quot;, xaxt = &quot;n&quot;,
+     xlab = &quot;&quot;, ylab = &quot;&quot;, yaxt = &quot;n&quot;, main = &quot;WT144 Chr5 QTL interval&quot;)
+# Add points to the plot
+points(chr5.region$POS, chr5.region$anno, pch = &quot;|&quot;, cex = 2, col = &quot;red&quot;)
+box()  # Add a box around the plot
+# Change the y-axis tick labels
+axis(2, 1:length(levels(chr5.region$anno)), labels = levels(chr5.region$anno), font = 2, las = 1, cex.axis = 0.7)
+
+# Plot 2
+par(mar = c(5.10, 10, 0.01, 0.5))
+plot_genes(chr5_gene, bgcolor=&quot;white&quot;)
+
+# Plot 3
+par(mar = c(0.01, 0.01, 2, 0.5))
+#Create the base plot
+plot(chr14.region$POS, chr14.region$anno, type = &quot;n&quot;, xaxt = &quot;n&quot;,
+     xlab = &quot;&quot;, ylab = &quot;&quot;, yaxt = &quot;n&quot;, main = &quot;WT144 Chr14 QTL interval&quot;)
+# Add points to the plot
+points(chr14.region$POS, chr14.region$anno, pch = &quot;|&quot;, cex = 2, col = &quot;red&quot;)
+box()  # Add a box around the plot
+# Change the y-axis tick labels
+axis(2, 1:length(levels(chr14.region$anno)), labels = FALSE, las = 1, font = 2, cex.axis = 0.7, tick = FALSE)
+
+# Plot 4
+par(mar = c(5.10, 0.01, 0.01, 0.5))
 plot_genes(chr14_gene, bgcolor=&quot;white&quot;)
 dev.off()</code></pre>
 <pre><code>png 
