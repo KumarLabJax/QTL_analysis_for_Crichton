@@ -129,8 +129,10 @@ bottom_mar <- c(5.10, 10, 0.01, 2)
 
 par(mar=top_mar)
 #Create the base plot
-plot(chr5.region$POS, chr5.region$anno, type = "n", xaxt = "n",
+plot(chr5.region$POS, chr5.region$anno, type = "n", xaxt = "n", xaxs = "i",
+     xlim = c(1.29e08, 1.40e08),
      xlab = "",ylab = "", yaxt = "n", main = "WT144 Chr5 QTL interval")
+#axis(1, at = seq(1.29e08, 1.40e08, by = 2e6), las=1, padj = -1) #make sure top and bottom x axis aligned
 # Add points to the plot
 points(chr5.region$POS, chr5.region$anno, pch = "|", cex = 1, col = "red")
 box()  # Add a box around the plot
@@ -138,11 +140,14 @@ box()  # Add a box around the plot
 axis(2, 1:length(levels(chr5.region$anno)), labels = levels(chr5.region$anno), las = 1, cex.axis = 0.65)
 #bottom
 par(mar=bottom_mar)
-plot_genes(chr5_gene, bgcolor="white")
+plot_genes(chr5_gene, bgcolor="white",
+           xlim = c(1.29e08/1e6, 1.40e08/1e6))
+axis(1, at = seq(1.29e08, 1.40e08, by = 2e6), 
+     labels = seq(1.29e08, 1.40e08, by = 2e6)/1e6,
+     las=1, padj = -1)
 
 # save the plot
 pdf(file = "output/wt144_chr5_qtlinterval.pdf", width = 10, height = 8)
-# 2 x 1 panels; adjust margins
 old_mfrow <- par("mfrow")
 old_mar <- par("mar")
 on.exit(par(mfrow=old_mfrow, mar=old_mar))
@@ -153,8 +158,10 @@ bottom_mar <- c(5.10, 10, 0.01, 2)
 
 par(mar=top_mar)
 #Create the base plot
-plot(chr5.region$POS, chr5.region$anno, type = "n", xaxt = "n",
+plot(chr5.region$POS, chr5.region$anno, type = "n", xaxt = "n", xaxs = "i",
+     xlim = c(1.29e08, 1.40e08),
      xlab = "",ylab = "", yaxt = "n", main = "WT144 Chr5 QTL interval")
+#axis(1, at = seq(1.29e08, 1.40e08, by = 2e6), las=1, padj = -1) #make sure top and bottom x axis aligned
 # Add points to the plot
 points(chr5.region$POS, chr5.region$anno, pch = "|", cex = 1, col = "red")
 box()  # Add a box around the plot
@@ -162,7 +169,11 @@ box()  # Add a box around the plot
 axis(2, 1:length(levels(chr5.region$anno)), labels = levels(chr5.region$anno), las = 1, cex.axis = 0.65)
 #bottom
 par(mar=bottom_mar)
-plot_genes(chr5_gene, bgcolor="white")
+plot_genes(chr5_gene, bgcolor="white",
+           xlim = c(1.29e08/1e6, 1.40e08/1e6))
+axis(1, at = seq(1.29e08, 1.40e08, by = 2e6), 
+     labels = seq(1.29e08, 1.40e08, by = 2e6)/1e6,
+     las=1, padj = -1)
 dev.off()
 
 #chr14 interval-----------------------------------------------------------------------
@@ -181,18 +192,21 @@ chr14.region <- vcf3@fix %>%
   dplyr::mutate(anno = as.factor(anno))
 
 # 2 x 1 panels; adjust margins
+# 2 x 1 panels; adjust margins
 old_mfrow <- par("mfrow")
 old_mar <- par("mar")
 on.exit(par(mfrow=old_mfrow, mar=old_mar))
-layout(rbind(1,2), heights=c(0.5, 2))
+layout(rbind(1,2), heights=c(2, 4))
 top_mar <- bottom_mar <- old_mar
 top_mar <- c(0.01, 10, 2, 2)
 bottom_mar <- c(5.10, 10, 0.01, 2)
 
 par(mar=top_mar)
 #Create the base plot
-plot(chr14.region$POS, chr14.region$anno, type = "n", xaxt = "n",
-     xlab = "POS",ylab = "", yaxt = "n", main = "WT144 Chr14 QTL interval")
+plot(chr14.region$POS, chr14.region$anno, type = "n", xaxt = "n", xaxs = "i",
+     xlim = c(61e06, 70e06),
+     xlab = "",ylab = "", yaxt = "n", main = "WT144 chr14 QTL interval")
+#axis(1, at = seq(61e06, 70e06, by = 2e6), las=1, padj = -1) #make sure top and bottom x axis aligned
 # Add points to the plot
 points(chr14.region$POS, chr14.region$anno, pch = "|", cex = 1, col = "red")
 box()  # Add a box around the plot
@@ -200,7 +214,11 @@ box()  # Add a box around the plot
 axis(2, 1:length(levels(chr14.region$anno)), labels = levels(chr14.region$anno), las = 1, cex.axis = 0.65)
 #bottom
 par(mar=bottom_mar)
-plot_genes(chr14_gene, bgcolor="white")
+plot_genes(chr14_gene, bgcolor="white",
+           xlim = c(61e06/1e6, 70e06/1e6))
+axis(1, at = seq(61e06, 70e06, by = 2e6), 
+     labels = seq(61e06, 70e06, by = 2e6)/1e6,
+     las=1, padj = -1)
 
 # save the plot
 pdf(file = "output/wt144_chr14_qtlinterval.pdf", width = 10, height = 8)
@@ -208,15 +226,17 @@ pdf(file = "output/wt144_chr14_qtlinterval.pdf", width = 10, height = 8)
 old_mfrow <- par("mfrow")
 old_mar <- par("mar")
 on.exit(par(mfrow=old_mfrow, mar=old_mar))
-layout(rbind(1,2), heights=c(0.5, 2))
+layout(rbind(1,2), heights=c(2, 4))
 top_mar <- bottom_mar <- old_mar
 top_mar <- c(0.01, 10, 2, 2)
 bottom_mar <- c(5.10, 10, 0.01, 2)
 
 par(mar=top_mar)
 #Create the base plot
-plot(chr14.region$POS, chr14.region$anno, type = "n", xaxt = "n",
-     xlab = "POS",ylab = "", yaxt = "n", main = "WT144 Chr14 QTL interval")
+plot(chr14.region$POS, chr14.region$anno, type = "n", xaxt = "n", xaxs = "i",
+     xlim = c(61e06, 70e06),
+     xlab = "",ylab = "", yaxt = "n", main = "WT144 chr14 QTL interval")
+#axis(1, at = seq(61e06, 70e06, by = 2e6), las=1, padj = -1) #make sure top and bottom x axis aligned
 # Add points to the plot
 points(chr14.region$POS, chr14.region$anno, pch = "|", cex = 1, col = "red")
 box()  # Add a box around the plot
@@ -224,7 +244,11 @@ box()  # Add a box around the plot
 axis(2, 1:length(levels(chr14.region$anno)), labels = levels(chr14.region$anno), las = 1, cex.axis = 0.65)
 #bottom
 par(mar=bottom_mar)
-plot_genes(chr14_gene, bgcolor="white")
+plot_genes(chr14_gene, bgcolor="white",
+           xlim = c(61e06/1e6, 70e06/1e6))
+axis(1, at = seq(61e06, 70e06, by = 2e6), 
+     labels = seq(61e06, 70e06, by = 2e6)/1e6,
+     las=1, padj = -1)
 dev.off()
 
 #chr5 and chr14 in one figure-----------------------------------------------------
@@ -237,35 +261,57 @@ layout(mat = matrix(c(1:4),
 # Plot 1
 par(mar = c(0.01, 10, 2, 0.5))
 #Create the base plot
-plot(chr5.region$POS, chr5.region$anno, type = "n", xaxt = "n",
-     xlab = "", ylab = "", yaxt = "n", main = "WT144 Chr5 QTL interval")
+plot(chr5.region$POS, chr5.region$anno, type = "n", xaxt = "n", xaxs = "i",
+     xlim = c(1.29e08, 1.40e08),
+     xlab = "",ylab = "", yaxt = "n", main = "WT144 Chr5 QTL interval")
+#axis(1, at = seq(1.29e08, 1.40e08, by = 2e6), las=1, padj = -1) #make sure top and bottom x axis aligned
 # Add points to the plot
 points(chr5.region$POS, chr5.region$anno, pch = "|", cex = 2, col = "red")
 box()  # Add a box around the plot
 # Change the y-axis tick labels
 axis(2, 1:length(levels(chr5.region$anno)), labels = levels(chr5.region$anno), font = 2, las = 1, cex.axis = 0.7)
+# text(136332619,                                # Add labels
+#      5,
+#      labels = "Chr5-136332619-.-C-A",
+#      pos = 4, offset = 0.1,
+#      cex = 0.5)
 
 # Plot 2
 par(mar = c(5.10, 10, 0.01, 0.5))
-plot_genes(chr5_gene, bgcolor="white")
+plot_genes(chr5_gene, bgcolor="white",
+           xlim = c(1.29e08/1e6, 1.40e08/1e6))
+axis(1, at = seq(1.29e08, 1.40e08, by = 2e6), 
+     labels = seq(1.29e08, 1.40e08, by = 2e6)/1e6,
+     las=1, padj = -1)
 
 # Plot 3
 par(mar = c(0.01, 0.01, 2, 0.5))
 #Create the base plot
-plot(chr14.region$POS, chr14.region$anno, type = "n", xaxt = "n",
-     xlab = "", ylab = "", yaxt = "n", main = "WT144 Chr14 QTL interval")
+plot(chr14.region$POS, chr14.region$anno, type = "n", xaxt = "n", xaxs = "i",
+     xlim = c(61e06, 70e06),
+     xlab = "", ylab = "", yaxt = "n", main = "WT144 chr14 QTL interval")
+#axis(1, at = seq(61e06, 70e06, by = 2e6), las=1, padj = -1) #make sure top and bottom x axis aligned
 # Add points to the plot
 points(chr14.region$POS, chr14.region$anno, pch = "|", cex = 2, col = "red")
 box()  # Add a box around the plot
 # Change the y-axis tick labels
 axis(2, 1:length(levels(chr14.region$anno)), labels = FALSE, las = 1, font = 2, cex.axis = 0.7, tick = FALSE)
+# text(69691477,                                # Add labels
+#      1,
+#      labels = "Chr14-69691477-.-G-T",
+#      pos = 2, offset = 0.1,
+#      cex = 0.5)
 
 # Plot 4
 par(mar = c(5.10, 0.01, 0.01, 0.5))
-plot_genes(chr14_gene, bgcolor="white")
+plot_genes(chr14_gene, bgcolor="white",
+           xlim = c(61e06/1e6, 70e06/1e6))
+axis(1, at = seq(61e06, 70e06, by = 2e6), 
+     labels = seq(61e06, 70e06, by = 2e6)/1e6,
+     las=1, padj = -1)
 
 # save the plot
-pdf(file = "output/wt144_chr5_and_chr14_qtlinterval.pdf", width = 11.7, height = 8.3)# Set plot layout
+pdf(file = "output/wt144_chr5_and_chr14_qtlinterval.pdf", width = 11, height = 8.3)# Set plot layout
 layout(mat = matrix(c(1:4), 
                     nrow = 2, 
                     ncol = 2),
@@ -275,33 +321,54 @@ layout(mat = matrix(c(1:4),
 # Plot 1
 par(mar = c(0.01, 10, 2, 0.5))
 #Create the base plot
-plot(chr5.region$POS, chr5.region$anno, type = "n", xaxt = "n",
-     xlab = "", ylab = "", yaxt = "n", main = "WT144 Chr5 QTL interval")
+plot(chr5.region$POS, chr5.region$anno, type = "n", xaxt = "n", xaxs = "i",
+     xlim = c(1.29e08, 1.40e08),
+     xlab = "",ylab = "", yaxt = "n", main = "WT144 Chr5 QTL interval")
+#axis(1, at = seq(1.29e08, 1.40e08, by = 2e6), las=1, padj = -1) #make sure top and bottom x axis aligned
 # Add points to the plot
 points(chr5.region$POS, chr5.region$anno, pch = "|", cex = 2, col = "red")
 box()  # Add a box around the plot
 # Change the y-axis tick labels
 axis(2, 1:length(levels(chr5.region$anno)), labels = levels(chr5.region$anno), font = 2, las = 1, cex.axis = 0.7)
+# text(136332619,                                # Add labels
+#      5,
+#      labels = "Chr5-136332619-.-C-A",
+#      pos = 4, offset = 0.1,
+#      cex = 0.5)
 
 # Plot 2
 par(mar = c(5.10, 10, 0.01, 0.5))
-plot_genes(chr5_gene, bgcolor="white")
+plot_genes(chr5_gene, bgcolor="white",
+           xlim = c(1.29e08/1e6, 1.40e08/1e6))
+axis(1, at = seq(1.29e08, 1.40e08, by = 2e6), 
+     labels = seq(1.29e08, 1.40e08, by = 2e6)/1e6,
+     las=1, padj = -1)
 
 # Plot 3
 par(mar = c(0.01, 0.01, 2, 0.5))
 #Create the base plot
-plot(chr14.region$POS, chr14.region$anno, type = "n", xaxt = "n",
-     xlab = "", ylab = "", yaxt = "n", main = "WT144 Chr14 QTL interval")
+plot(chr14.region$POS, chr14.region$anno, type = "n", xaxt = "n", xaxs = "i",
+     xlim = c(61e06, 70e06),
+     xlab = "", ylab = "", yaxt = "n", main = "WT144 chr14 QTL interval")
+#axis(1, at = seq(61e06, 70e06, by = 2e6), las=1, padj = -1) #make sure top and bottom x axis aligned
 # Add points to the plot
 points(chr14.region$POS, chr14.region$anno, pch = "|", cex = 2, col = "red")
 box()  # Add a box around the plot
 # Change the y-axis tick labels
 axis(2, 1:length(levels(chr14.region$anno)), labels = FALSE, las = 1, font = 2, cex.axis = 0.7, tick = FALSE)
+# text(69691477,                                # Add labels
+#      1,
+#      labels = "Chr14-69691477-.-G-T",
+#      pos = 2, offset = 0.1,
+#      cex = 0.5)
 
 # Plot 4
 par(mar = c(5.10, 0.01, 0.01, 0.5))
-plot_genes(chr14_gene, bgcolor="white")
+plot_genes(chr14_gene, bgcolor="white",
+           xlim = c(61e06/1e6, 70e06/1e6))
+axis(1, at = seq(61e06, 70e06, by = 2e6), 
+     labels = seq(61e06, 70e06, by = 2e6)/1e6,
+     las=1, padj = -1)
 dev.off()
-
 ```
 
