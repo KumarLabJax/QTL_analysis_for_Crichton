@@ -515,16 +515,16 @@ This reproducible <a href="http://rmarkdown.rstudio.com">R Markdown</a> analysis
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsghpt0K8Me3vIyJLJoox2w4kDfI0eY9odt0ubNtngithubcomKumarLabJaxQTLanalysisforCrichtontree34a1a97a17329e181a8f4cf5e075e29c8b85975btargetblank34a1a97a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://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@github.com/KumarLabJax/QTL_analysis_for_Crichton/tree/34a1a97a17329e181a8f4cf5e075e29c8b85975b" target="_blank">34a1a97</a> </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsghpt0K8Me3vIyJLJoox2w4kDfI0eY9odt0ubNtngithubcomKumarLabJaxQTLanalysisforCrichtontree41e96731062410ee1a05443ad785ddc32664f95dtargetblank41e9673a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://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@github.com/KumarLabJax/QTL_analysis_for_Crichton/tree/41e96731062410ee1a05443ad785ddc32664f95d" target="_blank">41e9673</a> </a>
 </p>
 </div>
-<div id="strongRepositoryversionstrongahrefhttpsghpt0K8Me3vIyJLJoox2w4kDfI0eY9odt0ubNtngithubcomKumarLabJaxQTLanalysisforCrichtontree34a1a97a17329e181a8f4cf5e075e29c8b85975btargetblank34a1a97a" class="panel-collapse collapse">
+<div id="strongRepositoryversionstrongahrefhttpsghpt0K8Me3vIyJLJoox2w4kDfI0eY9odt0ubNtngithubcomKumarLabJaxQTLanalysisforCrichtontree41e96731062410ee1a05443ad785ddc32664f95dtargetblank41e9673a" class="panel-collapse collapse">
 <div class="panel-body">
 <p>
 Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility.
 </p>
 <p>
-The results in this page were generated with repository version <a href="https://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@github.com/KumarLabJax/QTL_analysis_for_Crichton/tree/34a1a97a17329e181a8f4cf5e075e29c8b85975b" target="_blank">34a1a97</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
+The results in this page were generated with repository version <a href="https://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@github.com/KumarLabJax/QTL_analysis_for_Crichton/tree/41e96731062410ee1a05443ad785ddc32664f95d" target="_blank">41e9673</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
 </p>
 <p>
 Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
@@ -536,9 +536,7 @@ Ignored files:
 
 Untracked files:
     Untracked:  analysis/plot.R
-    Untracked:  data/GES15-07028-C-WT144G8N2F70426M.final_variants_filtered_dbsnp_snpEff.vcf
-    Untracked:  data/GES15-07028-C-WT144G8N2F70426M.final_variants_filtered_dbsnp_snpEff.vcf.idx
-    Untracked:  data/GES15-07028-C-WT144G8N2F70426M.final_variants_filtered_dbsnp_snpEff_nointersect_noindels_homo.recode.vcf
+    Untracked:  data/vcf/
     Untracked:  ex/
     Untracked:  output/GES15-07028-C-WT144G8N2F70426M.final_variants_filtered_dbsnp_snpEff_nointersect_noindels_homo.pdf
     Untracked:  output/GES15-07029-D-WT144G8N2F703F.final_variants_filtered_dbsnp_snpEff_nointersect_noindels_homo.pdf
@@ -556,11 +554,13 @@ Untracked files:
     Untracked:  output/pdf/
     Untracked:  output/qtl.out.obj.mixedmodel.RData
     Untracked:  output/qtl.out.obj.mixedmodel.final.RData
+    Untracked:  output/wt144_chr14_qtlinterval.pdf
+    Untracked:  output/wt144_chr5_qtlinterval.pdf
 
 Unstaged changes:
     Modified:   analysis/workflow_proc.R
-    Deleted:    output/WT144_variants_nointersect_noindels_homo.pdf
-    Deleted:    output/wt144_chr5_and_chr14_qtlinterval.pdf
+    Modified:   output/WT144_variants_nointersect_noindels_homo.pdf
+    Modified:   output/wt144_chr5_and_chr14_qtlinterval.pdf
 
 </code></pre>
 <p>
@@ -599,6 +599,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://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@github.com/KumarLabJax/QTL_analysis_for_Crichton/blob/41e96731062410ee1a05443ad785ddc32664f95d/analysis/Variant_plot.Rmd" target="_blank">41e9673</a>
+</td>
+<td>
+xhyuo
+</td>
+<td>
+2023-04-25
+</td>
+<td>
+one plot for chr5 and chr14 align x axis
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://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@github.com/KumarLabJax/QTL_analysis_for_Crichton/blob/b568e32dbec0f03928f35eaa073c2b525bac29b2/docs/Variant_plot.html" target="_blank">b568e32</a>
+</td>
+<td>
+xhyuo
+</td>
+<td>
+2023-04-25
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -944,6 +978,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://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@github.com/KumarLabJax/QTL_analysis_for_Crichton/blob/b568e32dbec0f03928f35eaa073c2b525bac29b2/docs/figure/Variant_plot.Rmd/WT144 QTL interval-1.png" target="_blank">b568e32</a>
+</td>
+<td>
+xhyuo
+</td>
+<td>
+2023-04-25
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://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@github.com/KumarLabJax/QTL_analysis_for_Crichton/blob/6acd99b3b738c44102c3064fb10fd62e59623091/docs/figure/Variant_plot.Rmd/WT144 QTL interval-1.png" target="_blank">6acd99b</a>
 </td>
 <td>
@@ -1065,6 +1110,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://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@github.com/KumarLabJax/QTL_analysis_for_Crichton/blob/b568e32dbec0f03928f35eaa073c2b525bac29b2/docs/figure/Variant_plot.Rmd/WT144 QTL interval-2.png" target="_blank">b568e32</a>
+</td>
+<td>
+xhyuo
+</td>
+<td>
+2023-04-25
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://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@github.com/KumarLabJax/QTL_analysis_for_Crichton/blob/7ee5a3851e89c6208568f11a08f026ecc9a3be9b/docs/figure/Variant_plot.Rmd/WT144 QTL interval-2.png" target="_blank">7ee5a38</a>
@@ -1195,6 +1251,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://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@github.com/KumarLabJax/QTL_analysis_for_Crichton/blob/b568e32dbec0f03928f35eaa073c2b525bac29b2/docs/figure/Variant_plot.Rmd/WT144 QTL interval-3.png" target="_blank">b568e32</a>
+</td>
+<td>
+xhyuo
+</td>
+<td>
+2023-04-25
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://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@github.com/KumarLabJax/QTL_analysis_for_Crichton/blob/6acd99b3b738c44102c3064fb10fd62e59623091/docs/figure/Variant_plot.Rmd/WT144 QTL interval-3.png" target="_blank">6acd99b</a>
 </td>
 <td>
@@ -1219,7 +1286,7 @@ layout(mat = matrix(c(1:4),
 # Plot 1
 par(mar = c(0.01, 10, 2, 0.5))
 #Create the base plot
-plot(chr5.region$POS, chr5.region$anno, type = &quot;n&quot;, xaxt = &quot;n&quot;, xaxs = &quot;i&quot;,
+plot(chr5.region$POS, chr5.region$anno, type = &quot;n&quot;, xaxs = &quot;i&quot;,
      xlim = c(1.29e08, 1.40e08),
      xlab = &quot;&quot;,ylab = &quot;&quot;, yaxt = &quot;n&quot;, main = &quot;WT144 Chr5 QTL interval&quot;)
 #axis(1, at = seq(1.29e08, 1.40e08, by = 2e6), las=1, padj = -1) #make sure top and bottom x axis aligned
