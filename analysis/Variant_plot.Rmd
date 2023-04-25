@@ -321,7 +321,7 @@ layout(mat = matrix(c(1:4),
 # Plot 1
 par(mar = c(0.01, 10, 2, 0.5))
 #Create the base plot
-plot(chr5.region$POS, chr5.region$anno, type = "n", xaxt = "n", xaxs = "i",
+plot(chr5.region$POS, chr5.region$anno, type = "n", xaxs = "i",
      xlim = c(1.29e08, 1.40e08),
      xlab = "",ylab = "", yaxt = "n", main = "WT144 Chr5 QTL interval")
 #axis(1, at = seq(1.29e08, 1.40e08, by = 2e6), las=1, padj = -1) #make sure top and bottom x axis aligned
